@@ -6,7 +6,7 @@ import { Observable, Subject } from 'rxjs';
 const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
   strictDiscoveryDocumentValidation: false,
-  redirectUri: 'http://localhost:4200',
+  redirectUri: 'https://sys-email.web.app/',
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
     // '<your-client-id-here (go to google console to create gmail api client id)>',
 
