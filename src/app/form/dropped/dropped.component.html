@@ -1,0 +1,84 @@
+<ul>
+    @for (item of dropped(); track item.id) { 
+        @switch(item.key){ 
+            @case('Input'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-input [item]="item" ></app-d-input>
+                </li>
+            } 
+            @case('Textarea'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-textarea [item]="item"></app-d-textarea>
+                </li>
+            } 
+            @case('Select'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-select [item]="item"></app-d-select>
+                </li>
+            } 
+            @case('Radio'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-radio [item]="item"></app-d-radio>
+                </li>
+            } 
+            @case('Checkbox'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-checkbox [item]="item"></app-d-checkbox>
+                </li>
+            } 
+            @case('Fileupload'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-fileupload [item]="item"></app-d-fileupload>
+                </li>
+            } 
+            @case('Hcaptcha'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-hcaptcha [item]="item"></app-d-hcaptcha>
+                </li>
+            } 
+            @case('Recaptcha'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-recaptcha [item]="item"></app-d-recaptcha>
+                </li>
+            } 
+            @case('Button'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-button [item]="item"></app-d-button>
+                </li>
+            } 
+            @case('Btn group'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-button-group [item]="item"></app-d-button-group>
+                </li>
+            }
+            @case('Start Condition'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-start-condition [item]="item"></app-d-start-condition>
+                </li>
+            }
+            @case('Find Condition'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-find-condition [item]="item"></app-d-find-condition>
+                </li>
+            }
+            @case('Title'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-title [item]="item"></app-d-title>
+                </li>
+            }
+            @case('Paragraph'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-paragraph [item]="item"></app-d-paragraph>
+                </li>
+            }
+            @case('HTML'){
+                <li class="m-2 p-1 w-[96%] rounded hover:bg-slate-200 shadow" (click)="onSelect(item); onCtrlClick($event, item)">   
+                    <app-d-html [item]="item"></app-d-html>
+                </li>
+            }
+             
+        } 
+    }
+</ul>
+
+

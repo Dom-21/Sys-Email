@@ -1,0 +1,17 @@
+<div class="flex justify-between w-full h-fit" [cdkDragData]="item" cdkDrag>
+    <div [className]="'flex ' + getWidth(item.property.width())+' '+isCenter(item.property.center()) " >
+        <button 
+        [name]="item.property.name()" 
+        [type]="item.property.type()" 
+        [value]="item.property.value()"
+        
+        [className]="item.property.class()+' '"
+        > {{item.property.text()}}</button>
+        @if(item.property.helper()){
+            <p class="text-gray-400">{{ item.property.helper() }}</p>
+        }
+    </div>
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+@if (isAddingTask) {
+  <app-new-task [userId]="userId" (close)="onCloseAddTask()" />
+}
+
+<section id="tasks" class="h-min mt-10">
+  <header class="max-sm:flex max-sm:flex-col">
+    <h2 class=" w-min font-semibold text-indigo-950" style="font-size: 2rem;">All Tasks</h2>
+    <menu>
+      <button (click)="onStartAddTask()">Add Task</button>
+    </menu>
+  </header>
+  <hr>
+
+  <ul class="min-h-[calc(100vh-250px)]">
+    @for (task of selectedUserTasks; track task.id) {
+      <li>
+        <app-task [task]="task" />
+      </li>
+    }
+  </ul>
+</section>
+

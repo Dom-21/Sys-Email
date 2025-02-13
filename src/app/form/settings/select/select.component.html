@@ -1,0 +1,126 @@
+<div class="card">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">Main</p-tab>
+      <p-tab value="1">Options</p-tab>
+      <p-tab value="2">Plugins</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <div>
+          <div class="w-full flex flex-col m-1">
+            <label class="text-gray-600 m-1" for="name">Name</label>
+            <input type="text" [(ngModel)]="name" class="p-1 m-1 border border-zinc-400" />
+          </div>
+
+          <div class="w-full flex flex-col m-1">
+            <label class="text-gray-600 m-1" for="name">Default value</label>
+            <input type="text" [(ngModel)]="value" class="p-1 m-1 border border-zinc-400" />
+          </div>
+
+          <div class="w-full flex flex-col m-1">
+            <label class="text-gray-600 m-1" for="name">Label</label>
+            <input type="text" [(ngModel)]="label" class="p-1 m-1 border border-zinc-400" />
+          </div>
+
+          <div class="w-full flex flex-col m-1">
+            <label class="text-gray-600 m-1" for="name">Helper</label>
+            <input type="text" [(ngModel)]="helper" class="p-1 m-1 border border-zinc-400" />
+          </div>
+
+          <div class="w-full flex flex-col m-1">
+            <label class="text-gray-600 m-1" for="name">Class</label>
+            <input type="text" [(ngModel)]="class" class="p-1 m-1 border border-zinc-400" />
+          </div>
+
+          <div class="w-full flex flex-col m-1">
+            <label class="text-gray-600 m-1" for="type">Width</label>
+            <select [(ngModel)]="width" class="form-select p-1 m-1 border border-zinc-400">
+              @for( wid of widths; track wid){
+              <option [value]="wid">{{ wid }} &#37;</option>
+              }
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 m-2">
+            <div class="flex w-7 h-7 mt-4">
+              <input class="w-full h-full mx-2 scale-150" type="checkbox" name="disable" id="disable"
+                [(ngModel)]="disable" />
+              <label for="disable">Disabled</label>
+            </div>
+
+            <div class="flex w-7 h-7 mt-4">
+              <input class="w-full h-full mx-2 scale-150" type="checkbox" name="disable" id="disable"
+                [(ngModel)]="multiple" />
+              <label for="disable">Multiple</label>
+            </div>
+
+            <div class="flex w-7 h-7 mt-4">
+              <input class="w-full h-full mx-2 scale-150" type="checkbox" name="disable" id="disable"
+                [(ngModel)]="require" />
+              <label for="disable">Required</label>
+            </div>
+          </div>
+        </div>
+      </p-tabpanel>
+      <p-tabpanel value="1">
+        <div>
+          <div class="m-1 mb-4 flex justify-between">
+            <button class="border border-zinc-300 rounded p-1 bg-blue-600 text-white w-24" (click)="showAll()">Show All</button>
+            <button class="border border-zinc-300 rounded p-1 bg-blue-600 text-white w-24" (click)="collapseAll()">Collapse All</button>
+          </div>
+          @for(opt of options(); track opt){
+          <div>
+            <div class="flex h-fit gap-1">
+              <button class="border border-zinc-400 px-1 rounded flex items-center" (click)="toggleShow(opt)">
+                <h3>Option</h3>
+                @if(opt.show && show){
+                  <i class="pi pi-angle-down p-1"></i>
+                }@else {
+                  <i class="pi pi-angle-up p-1"></i>
+                }
+              </button>
+              <hr class="border border-zinc-300 w-full mt-3" />
+              <div class="flex justify-center items-center" (click)="onClickDelete(opt)">
+                <i class="pi pi-trash text-gray-700 mx-2"></i>
+              </div>
+            </div>
+            @if(opt.show && show){
+              <div class="flex flex-col" >
+                <label class="text-gray-600 m-1 mt-2" for="option">Text</label>
+                <input class="p-1 m-1 border border-zinc-400" type="text" [(ngModel)]="opt.option" />
+              </div>
+              <div class="flex flex-col">
+                <label class="text-gray-600 m-1 mt-2" for="option">Value</label>
+                <input class="p-1 m-1 border border-zinc-400" type="text" [(ngModel)]="opt.value" />
+              </div>
+              <div class="flex flex-col">
+                <label class="text-gray-600 m-1 mt-2" for="option">Group Name</label>
+                <input class="p-1 m-1 border border-zinc-400" type="text" [(ngModel)]="opt.group" />
+              </div>
+            }
+          </div>
+          <hr class="border border-zinc-300 w-full mt-3" />
+          }
+          <div class="flex justify-end">
+            <button class="m-1 mt-3 p-1 px-4 bg-green-600 text-white rounded" (click)="onClickAdd()">
+              Add
+            </button>
+          </div>
+        </div>
+      </p-tabpanel>
+      <p-tabpanel value="2"> 
+        <div class="w-full flex flex-col m-1" >
+          <label class="text-gray-600 m-1" for="plugin">Select plugins</label>
+          <select [(ngModel)]="plugin" class=" p-1 m-1 border border-zinc-400">
+              @for( p of plugins; track p){
+                  <option [value]="p">
+                  {{ p }}
+                  </option>
+              }
+            </select>
+        </div>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</div>

@@ -1,0 +1,8 @@
+<div class="flex justify-between w-full h-max" [cdkDragData]="item" cdkDrag>
+    <div class="flex w-full justify-center">
+        <pre class="whitespace-pre-wrap break-words p-2" [innerText]="item.property.code()"></pre>
+    </div>
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>

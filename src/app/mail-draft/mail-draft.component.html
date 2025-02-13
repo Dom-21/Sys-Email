@@ -1,0 +1,79 @@
+<div class="relative">
+    <!-- Overlay for Blur Effect -->
+    @if(tabs){
+    <div class="fixed inset-0 bg-black bg-opacity-40 z-30"></div>
+    }
+  
+    <div
+      class="mt-5 p-4 border-zinc-300 border-[1px] rounded-md bg-slate-50 shadow-md max-h-[calc(100vh-100px)] overflow-y-auto"
+    >
+      <div class="sm:hidden ml-1 p-3 flex" #tabsMenu>
+        <button (click)="onToggleTabs()">
+          <i
+            class="px-1 mt-1  rounded pi pi-bars text-gray-700 hover:bg-gray-200 bg-gray-100"
+            style="font-size: 1.5rem"
+          ></i>
+        </button>
+        <h2 class="text-2xl mx-2 font-medium px-1 text-gray-700">Message</h2>
+        @if(tabs){
+            <div class="absolute -mt-20 z-40">
+              <app-tabs-section></app-tabs-section>
+            </div>
+            }
+          
+      </div>
+      
+        <h2 class="max-sm:hidden text-2xl mx-2 font-medium px-1 text-gray-700">Message</h2> 
+      
+    <form #form>
+        <div class="card justify-center gap-4">
+            <div class="w-full flex mt-3">
+                <input id="to" [(ngModel)]="to" class="ng-dirty ng-invalid" name="To"
+                    class="w-full p-3 border-zinc-300 border-[1px] rounded" placeholder="To" />
+            </div>
+            <div class="w-full mt-3">
+                <input id="value3" class="ng-dirty ng-invalid" class="w-full p-3 border-zinc-300 border-[1px] rounded"
+                    [(ngModel)]="Cc" name="Cc" placeholder="Cc" />
+            </div>
+            <div class="w-full mt-3">
+                <input id="value3" class="ng-dirty ng-invalid" class="w-full p-3 border-zinc-300 border-[1px] rounded"
+                    [(ngModel)]="title" placeholder="Subject" name="Subject" />
+            </div>
+
+            <div class="w-full mt-4">
+                <div class="card flex">
+                    <p-editor [(ngModel)]="text" [style]="{ height: '250px' }" name="text"
+                        class="w-full border-zinc-300 border-[1px] rounded" />
+                </div>
+            </div>
+        </div>
+        <div class="w-full mt-3">
+            <input type="file" (change)="handleFileInput($event)" multiple 
+                class="form-input p-0 file:border-0 rounded file:bg-blue-700/90 file:px-4 file:py-2 file:font-semibold file:text-white file:hover:bg-blue-900 ltr:file:mr-5 rtl:file:ml-5" />
+        </div>
+
+        <div class="flex justify-end">
+            <div class="flex mx-1">
+
+                <button type="button" class="mt-4 mx-1 bg-red-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+                    (click)="reset()">
+                    Cancel
+                </button>
+                
+    
+                <button type="button" class="mt-4 mx-1 bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+                    (click)="save()">
+                    Save
+                </button>
+
+                
+                <button type="submit" class="mt-4 mx-1 bg-green-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+                    (click)="sendEmail()">
+                    Send
+                </button>
+    
+                
+            </div>
+        </div>
+    </form>
+</div>

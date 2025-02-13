@@ -1,0 +1,24 @@
+<div [className]="'flex h-fit '+getWidth(item.property.width())" [cdkDragData]="item" cdkDrag>
+    <div class="example-box flex justify-center items-center w-1/4">
+        {{ item.property.label() }}
+        @if(item.property.require()){ <p class="text-red-600">&ast;</p> }
+    </div>
+    <div class="w-3/4 flex justify-center items-center flex-col " >
+        <input 
+        [name]="item.property.name()" 
+        [type]="item.property.type()" 
+        [value]="item.property.value()"
+        [placeholder]="item.property.placeholder()"
+        [className]="item.property.class() + ' h-10 w-full border rounded border-gray-600'"
+        [disabled]="item.property.disable()"
+        [readOnly]="item.property.readonly()"
+        [required]="item.property.require()"
+        />
+        @if(item.property.helper()){
+            <p class="text-gray-400">{{ item.property.helper() }}</p>
+        }
+    </div>
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>

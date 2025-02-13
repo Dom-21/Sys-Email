@@ -1,0 +1,22 @@
+<div class="card">
+    <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0">Main</p-tab>
+            
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+                
+                <div class="w-full flex flex-col m-1" >
+                    <label class="text-gray-600 m-1" for="name">Parent field</label>
+                    <input type="text" [(ngModel)]="pfield" class="p-1 m-1 border border-zinc-400">
+                </div>
+
+                <div class="w-full flex flex-col m-1" >
+                    <label class="text-gray-600 m-1" for="name">Parent field value(s) </label>
+                    <input type="text" [(ngModel)]="pvalue" class="p-1 m-1 border border-zinc-400">
+                </div>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>

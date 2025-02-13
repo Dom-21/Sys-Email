@@ -1,0 +1,63 @@
+
+<div class="min-h-[300px] max-h-screen overflow-hidden">
+    <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
+       @if(messages.length>0){
+        <table class="sm:w-min md:w-full">
+            @for(message of messages; track message.messageId){
+            <tr class="hover:bg-green-100 hover:font-semibold" >
+                <td>
+                    <div class="flex whitespace-nowrap">
+                        <div class="card px-4 py-2 rounded-lg">
+                            <p-checkbox [binary]="true" [(ngModel)]="selectedMap[message.messageId]" 
+                            (onChange)="onSelectMessage(message)"/>
+                        </div>
+                        <div class=" mx-2 my-2 p-1 rounded hover:bg-gray-200  bg-gray-100"
+                            (click)="onToggleMarked(message)">
+                            @if(!message.isStarred){
+                                <i class="pi pi-star text-yellow-400"></i>
+                                } @else {
+                                <i class="pi pi-star-fill text-yellow-400"></i>
+                                }
+                        </div>
+                        <div class="mx-2 my-2 p-1 rounded hover:bg-gray-200  bg-gray-100"
+                            (click)="onToggleImportant(message)">
+                            @if(!message.isImportant){
+                                <i class="pi pi-bookmark text-indigo-900"></i>
+                                } @else {
+                                <i class="pi pi-bookmark-fill text-indigo-900"></i>
+                                }
+                        </div>
+                        <div class="mx-2 my-2 p-1 rounded " (click)="onMessageClick(message)"
+                        [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-semibold': message.isUnread }">
+                            {{ extractName(message)}}
+                        </div>
+                    </div>
+                </td>
+                <td (click)="onMessageClick(message)">
+                    <div class="line-clamp-1 md:min-w-[300px] overflow-hidden  text-gray-700"
+                    [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-medium': message.isUnread }">
+                       
+                        <div [innerHTML]="message.body"></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="flex items-center whitespace-nowrap">
+                        <div [ngClass]="getBackgroundColor(message)" class="h-2 w-2 rounded-full"></div>
+                        <div *ngIf="message.attachments.length > 0" class="card flex justify-center mx-2 my-2 p-1 rounded hover:bg-gray-200  bg-gray-100">
+                            <i class="pi pi-paperclip"></i>
+                        </div>
+                    </div>
+                </td>
+                <td class="whitespace-nowrap font-medium mx-4 p-2 px-2 text-gray-700">
+                    {{ message.date | date:'shortDate' }}
+                </td>
+            </tr>
+        }
+        </table>
+       }@else {
+        <div class="text-red-600 p-2 ">
+            <p>No mails found in {{component}} mails.</p>
+        </div>
+       }
+    </div>
+</div>

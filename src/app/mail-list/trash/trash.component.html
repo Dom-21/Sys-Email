@@ -1,0 +1,6 @@
+<app-mail-table
+  [messages]="trashEmails"
+  [component]="component"
+  (toggleMarked)="toggleMarked($event)"
+  (toggleImportant)="toggleImportant($event)"
+></app-mail-table>

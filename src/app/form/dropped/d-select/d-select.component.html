@@ -1,0 +1,29 @@
+<div [className]="'flex '+getWidth(item.property.width())" [cdkDragData]="item" cdkDrag>
+    <div class="example-box flex justify-center items-center w-1/4" >
+        {{ item.property.label() }}
+        @if(item.property.require()){ <p class="text-red-600">&ast;</p> }
+    </div>
+    <div class="w-3/4 flex justify-center items-center flex-col " >
+        <select
+        [name]="item.property.name()" 
+        [value]="item.property.value()"
+        [className]="item.property.class() + ' h-10  w-full border rounded border-gray-600'"
+        [disabled]="item.property.disable()"
+        [required]="item.property.require()"
+        [multiple]="item.property.multiple()"
+        >
+            <option disabled selected>{{item.property.placeholder()}}</option>
+            @for( opt of item.property.options(); track opt){
+                <option [value]="opt.value">{{opt.option}}</option>
+            }
+        </select>
+        @if(item.property.helper()){
+            <p class="text-gray-400">{{ item.property.helper() }}</p>
+        }
+    </div>
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>
+
+

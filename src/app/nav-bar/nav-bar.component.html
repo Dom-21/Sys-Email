@@ -1,0 +1,295 @@
+<div class="container h-14 w-11/12 bg-slate-50 rounded mx-auto flex justify-between shadow">
+  <div class="flex p-2">
+    <a class="max-lg:hidden">
+      <i class="pi pi-spin" style="font-size: 2rem">
+        <img src="/images/logo/logo.svg" alt="Logo" class="m-0 w-10 h-10 rounded-full border-2" />
+      </i>
+    </a>
+    <div>
+      <p
+        class="px-3 py-2 font-extrabold text-2xl text-indigo-600 font-serif hover:text-indigo-800 transition-colors bg-transparent">
+        SysMail
+      </p>
+    </div>
+    <div class="flex max-md:hidden" #calenderPopover>
+      <button (click)="toggle()" class="rounded border-zinc-200">
+        <i class="px-3 py-3 pi pi-calendar" style="font-size: 1.5rem; color: rgb(0, 0, 88)"></i>
+      </button>
+      @if(popOver){
+      <div class="relative">
+        <div class="absolute z-10 -left-20 top-16">
+          <p-datepicker class="max-w-full" [(ngModel)]="date" [inline]="true" [showWeek]="true" />
+        </div>
+      </div>
+      }
+      <button [routerLink]="['/dashboard/tasks']" routerLinkActive="router-link-active" [ngClass]="{
+          'bg-gray-200 rounded text-white': isActive('/dashboard/tasks')
+        }">
+        <i class="px-3 py-3 pi pi-pen-to-square" style="font-size: 1.5rem; color: rgb(0, 0, 88)"></i>
+      </button>
+
+      <a>
+        <i class="px-3 py-3 pi pi-comment" style="font-size: 1.5rem; color: rgb(0, 0, 88)"></i>
+      </a>
+    </div>
+
+    <div class="hidden max-md:block relative" #calenderPopover>
+      <button (click)="toggleNavMenu()">
+        <i class="px-3 py-3 pi pi-objects-column" style="font-size: 1.5rem; color: rgb(0, 0, 88)"></i>
+      </button>
+      @if(navMenu){
+      <div class="absolute z-10 -left-10 top-10 bg-slate-50 shadow-md rounded-md w-[180px]"
+        style="font-size: 1.3rem; color: rgb(0, 0, 88)">
+        <button (click)="toggle()" class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700">
+          <label for="calendar" class="px-1 py-1"> Calendar </label>
+          <i class="px-1 py-3 pi pi-calendar" style="font-size: 1.5rem; color: inherit"></i>
+        </button>
+        @if(popOver){
+        <div class="absolute z-10 -left-20 top-16">
+          <p-datepicker class="max-w-full" [(ngModel)]="date" [inline]="true" [showWeek]="true" />
+        </div>
+        }
+        <button [routerLink]="['/dashboard/tasks']" routerLinkActive="router-link-active"
+          class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700" [ngClass]="{
+            'bg-gray-200 rounded text-blue-700': isActive('/dashboard/tasks')
+          }">
+          <label for="calendar" class="px-1 py-1"> Tasks </label>
+          <i class="px-1 py-3 pi pi-pen-to-square" style="font-size: 1.5rem; color: inherit"></i>
+        </button>
+
+        <a class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700">
+          <label for="calendar" class="px-1 py-1"> Comments </label>
+          <i class="px-1 py-3 pi pi-comment" style="font-size: 1.5rem; color: inherit"></i>
+        </a>
+
+        <button class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700">
+          <label for="darkModeToggle" class="px-1 py-1" (click)="toggleDarkMode()">
+            @if(isDarkMode){ Dark Mode} @else { Light Mode}
+          </label>
+          @if(!isDarkMode){
+          <i class="px-1 py-3 pi pi-sun" style="font-size: 1.6rem; color: inherit"></i>
+          } @else {
+          <i class="px-1 py-3 pi pi-moon" style="font-size: 1.5rem; color: inherit"></i>
+          }
+        </button>
+
+        <button class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700 relative"
+          (click)="toggleDropdown()" style="font-size: 1.3rem">
+          <!-- Clickable Icon or Selected Flag -->
+
+          <!-- Globe Icon -->
+          @if(!selectedCountry){
+          <label for="selectCountry" class="px-1 py-1">Select Country</label>
+          <i class="px-1 py-3 rounded-full pi pi-globe" style="font-size: 1.5rem; color: inherit"></i>
+          } @else {
+          <label for="selectCountry" class="px-1 py-1" style="font-size: 1.3rem; color: inherit">{{ selectedCountry.name
+            }}</label>
+          <div class="w-10 h-10 px-1 py-3">
+            <img [src]="selectedCountry.flag" alt="{{ selectedCountry.name }}" />
+          </div>
+          }
+          <!-- Selected Country Flag -->
+
+          <!-- Dropdown -->
+          <div *ngIf="showDropdown" class="absolute top-12 left-0 bg-white shadow-md border rounded-md z-10"
+            style="width: 200px">
+            <ul class="list-none p-2">
+              <li *ngFor="let country of countries" class="p-2 hover:bg-gray-200 cursor-pointer flex items-center"
+                (click)="selectCountry(country)">
+                <img [src]="country.flag" alt="{{ country.name }}" class="w-6 h-6 rounded-full mr-2" />
+                {{ country.name }}
+              </li>
+            </ul>
+          </div>
+        </button>
+
+        <a class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700">
+          <label for="calendar" class="px-1 py-1"> Messages </label>
+          <i class="px-1 py-3 pi pi-envelope" style="font-size: 1.5rem; color: inherit"></i>
+        </a>
+
+        <a class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700">
+          <label for="calendar" class="px-1 py-1"> Notification </label>
+          <i class="px-1 py-3 pi pi-bell" style="font-size: 1.5rem; color: inherit"></i>
+        </a>
+        <a class="flex w-full justify-between rounded border-zinc-200 hover:text-blue-700"
+        [routerLink]="['/form-builder']" [routerLinkActive]="['router-link-active']">
+          <label for="calendar" class="px-1 py-1">Form Builder </label>
+          <i class="px-1 py-3 pi pi-building-columns" style="font-size: 1.5rem; color: inherit"></i>
+        </a>
+      </div>
+      }
+    </div>
+
+    <div class="max-md:hidden relative px-3 py-2">
+      <input type="text" pInputText placeholder="Search" [(ngModel)]="dateValue"
+        class="p-1 pl-10 pr-2 border rounded-lg" />
+      <button>
+        <i class="px-3 py-2 pi pi-search absolute top-2 left-2" style="font-size: 1.1rem; color: rgb(0, 0, 88)"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="flex">
+    <div class="hidden max-md:block py-2 mt-1.5">
+      <label for="searchBarToggle" class="flex items-center cursor-pointer" (click)="toggleSearchBar()">
+        <i class="p-2 pi pi-search text-gray-800 hover:bg-gray-200 bg-gray-100 mr-2 rounded-full"
+          style="font-size: 1.3rem"></i>
+      </label>
+      @if(searchBar){
+      <!-- Background overlay -->
+      <div class="fixed inset-0 bg-black opacity-40 z-10" (click)="toggleSearchBar()"></div>
+
+      <!-- Search Input -->
+      <input type="text" pInputText placeholder="Search" [(ngModel)]="dateValue"
+        class="fixed top-5 transform -translate-x-3/4 z-20 mx-10 w-[300px] p-2 border rounded-lg text-gray-900 bg-gray-100 shadow-lg" />
+      }
+    </div>
+    <div class="max-md:hidden card flex justify-center mt-1.5" >
+      <a class="flex items-center cursor-pointer" [routerLink]="['/form-builder']" [routerLinkActive]="['router-link-active']">
+        
+          <i class="p-2 border-1px mr-2 rounded-full hover:bg-gray-200 bg-gray-100 pi pi-building-columns"
+            style="font-size: 1.3rem"></i>
+      </a>
+    </div>
+    <div class="flex max-md:hidden mt-1.5">
+      <label for="darkModeToggle" class="flex items-center cursor-pointer" (click)="toggleDarkMode()">
+        @if(!isDarkMode){
+        <i class="p-2 pi pi-sun text-gray-800 hover:bg-gray-200 bg-gray-100 mr-2 rounded-full"
+          style="font-size: 1.3rem"></i>
+        } @else {
+        <i class="p-2 pi pi-moon text-gray-800 hover:bg-gray-200 bg-gray-100 mr-2 rounded-full"
+          style="font-size: 1.3rem"></i>
+        }
+      </label>
+    </div>
+
+    <div class="max-md:hidden card flex justify-center mt-1.5 relative">
+      <!-- Clickable Icon or Selected Flag -->
+      <div class="flex items-center cursor-pointer" (click)="toggleDropdown()">
+        <!-- Globe Icon -->
+        <i *ngIf="!selectedCountry" class="p-2 border-1px mr-2 rounded-full hover:bg-gray-200 bg-gray-100 pi pi-globe"
+          style="font-size: 1.3rem"></i>
+
+        <!-- Selected Country Flag -->
+        <img *ngIf="selectedCountry" [src]="selectedCountry.flag" alt="{{ selectedCountry.name }}"
+          class="w-10 h-10 p-1 border-1px mr-2 rounded-full hover:bg-gray-200 bg-gray-100" style="font-size: 1.3rem" />
+      </div>
+
+      <!-- Dropdown -->
+      <div *ngIf="showDropdown" class="absolute top-12 left-0 bg-white shadow-md border rounded-md z-10"
+        style="width: 200px">
+        <ul class="list-none p-2">
+          <li *ngFor="let country of countries" class="p-2 hover:bg-gray-200 cursor-pointer flex items-center"
+            (click)="selectCountry(country)">
+            <img [src]="country.flag" alt="{{ country.name }}" class="w-6 h-6 rounded-full mr-2" />
+            {{ country.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- <div class="card flex justify-center mt-1.5 ">
+            <label for="" class="flex items-center cursor-pointer">
+                <i class="p-2 border-1px mr-2 rounded-full hover:bg-gray-200  bg-gray-100  pi pi-globe"
+                    style="font-size: 1.3rem;"></i>
+            </label>
+        </div> -->
+
+    <div class="max-md:hidden card flex justify-center mt-1.5">
+      <label for="" class="flex items-center cursor-pointer">
+        <i class="p-2 border-1px mr-2 rounded-full hover:bg-gray-200 bg-gray-100 pi pi-envelope"
+          style="font-size: 1.3rem"></i>
+      </label>
+    </div>
+
+    <div class="max-md:hidden card flex justify-center mt-1.5">
+      <label for="" class="flex items-center cursor-pointer">
+        <i class="p-2 border-1px mr-2 rounded-full hover:bg-gray-200 bg-gray-100 pi pi-bell"
+          style="font-size: 1.3rem"></i>
+      </label>
+    </div>
+
+    <div class="relative card flex justify-center">
+      <div class="w-14 h-14 p-2 rounded-full">
+        <button (click)="toggleProfile()">
+          <img src="/images/logo/image.png" alt="Profile" class="border-zinc-300 border-[2px] rounded-full" />
+        </button>
+        @if(toggledProfile){
+        <div #profileDropdown class="relative -left-40 top-1 border w-max rounded-md">
+          <ul class="ml-0 w-max rounded-md bg-slate-50 absolute z-10 shadow" style="font-size: 0.9rem">
+            <li class="flex pr-2">
+              <div class="w-fit relative">
+                <img src="/images/logo/image.png" alt="Profile"
+                  class="m-3 w-10 h-10 border-gray-300 border-2 rounded-lg" />
+              </div>
+              <div class="mt-2" style="font-size: 1rem">
+                <p class="decoration-slate-900 mt-1 font-semibold" style="font-size: 0.8rem">
+                  {{ user.name }}
+                </p>
+                <p>
+                  <a class="text-xs underline text-green-500" style="font-size: 0.8rem">
+                    {{ user.email }}
+                  </a>
+                </p>
+              </div>
+            </li>
+            <li>
+              <div>
+                <button (click)="profilePopover()"
+                  class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700">
+                  <i class="pi pi-user p-2"></i>
+                  <p class="font-semibold p-1">Profile</p>
+                </button>
+
+                @if(profile){
+                <div class="absolute md:-left-96 md:-top-24 md:w-[calc(60vw-50px)] w-[350px] -left-36 -top-20 z-20">
+                  <app-profile (close)="onCloseProfile()"></app-profile>
+                </div>
+                }
+              </div>
+            </li>
+            <li>
+              <div>
+                <button class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700"
+                  [routerLink]="['/dashboard/inbox']" [routerLinkActive]="['router-link-active']">
+                  <i class="pi pi-inbox p-2"></i>
+                  <p class="font-semibold p-1">Inbox</p>
+                </button>
+              </div>
+            </li>
+            <li>
+              <div>
+                <button class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700" [routerLink]="['/lock']"
+                  [routerLinkActive]="['router-link-active']">
+                  <i class="pi pi-lock p-2"></i>
+                  <p class="font-semibold p-1">Lock Screen</p>
+                </button>
+              </div>
+            </li>
+
+            <!-- <li>
+              <div>
+                <button class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700" [routerLink]="['/form-builder']"
+                  [routerLinkActive]="['router-link-active']">
+                  <i class="pi pi-building-columns p-2"></i>
+                  <p class="font-semibold p-1">Form Builder</p>
+                </button>
+              </div>
+            </li> -->
+            <li>
+              <div>
+                <button (click)="onClickSignOut()"
+                  class="flex mx-auto p-1 w-full border-t-[1px] border-b-[1px] rounded-sm text-gray-800 border-gray-200 hover:bg-slate-200 hover:text-blue-700">
+                  <i class="pi pi-sign-out p-2"></i>
+                  <p class="font-semibold p-1">Sign Out</p>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

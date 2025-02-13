@@ -1,0 +1,30 @@
+<div class="w-[calc(100vw-100px)] bg-slate-100 h-[calc(100vh-100px)] mx-auto sm:flex items-center">
+    <div class="bg-cyan-500 border rounded border-gray-300 mx-auto max-sm:w-2/3 sm:w-1/2 block">
+        <div class="mx-auto sm:mt-10 md:flex justify-center relative">
+            <div>
+                <img class="max-md:mx-auto w-20 h-20 rounded-full border border-zinc-200 m-2"
+                    src="/images/logo/image.png" alt="Profile" />
+            </div>
+            <div class="m-4">
+                <h2 class="text-indigo-950 max-md:text-center max-md:text-sm font-semibold" style="font-size: 1.3rem">
+                    {{ user.name }}
+                </h2>
+                <h3 class="text-blue-950 max-md:text-center max-md:text-xs underline">
+                    {{ user.email }}
+                </h3>
+            </div>
+        </div>
+        <div class="m-4 mt-8 text-indigo-950 text-center max-md:text-xs font-semibold">
+            <form>
+                <label class="p-2" for="password">Password</label>
+                <input class="p-2 rounded w-3/4" type="password" name="password" [(ngModel)]="password"
+                    placeholder="Enter a password" (keypress)="unlock()" />
+                <p class="font-thin text-red-700">{{ message }}</p>
+            </form>
+        </div>
+        <button class="bg-blue-500 rounded m-8 p-2 px-4 text-white text-center justify-self-center flex"
+            (click)="unlock()">
+            Unlock
+        </button>
+    </div>
+</div>

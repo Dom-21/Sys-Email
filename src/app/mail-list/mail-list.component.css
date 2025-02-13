@@ -1,0 +1,18 @@
+.pagination-btn {
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, opacity 0.3s;
+  }
+  
+  .pagination-btn:hover:not(:disabled) {
+    background-color: #ddd; /* Hover effect for enabled buttons */
+  }
+  
+  .pagination-btn:disabled {
+    background-color: #e0e0e0; /* Faded background for disabled buttons */
+    color: #aaa; /* Faded text color for disabled buttons */
+    cursor: not-allowed; /* Indicate the button is not clickable */
+    opacity: 0.6; /* Slight transparency for fade effect */
+  }
+  
+

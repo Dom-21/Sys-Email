@@ -1,0 +1,84 @@
+<div class="card">
+    <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0">Main</p-tab>
+            <p-tab value="1">Plugins</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+                <div>
+                    <div class="w-full flex flex-col m-1" >
+                      <label class="text-gray-600 m-1" for="type">Type</label>
+                      <select [(ngModel)]="type" class="form-select p-1 m-1 border border-zinc-400">
+                          @for( type of types; track type){
+                              <option [value]="type">
+                              {{ type }}
+                              </option>
+                          }
+                        </select>
+                    </div>
+          
+                    <div class="w-full flex flex-col m-1" >
+                      <label class="text-gray-600 m-1" for="name">Name</label>
+                      <input type="text" [(ngModel)]="name" class="p-1 m-1 border border-zinc-400">
+                    </div>
+          
+                    <div class="w-full flex flex-col m-1" >
+                      <label class="text-gray-600 m-1" for="name">Value</label>
+                      <input type="text" [(ngModel)]="value" class="p-1 m-1 border border-zinc-400">
+                    </div>
+          
+                    <div class="w-full flex flex-col m-1" >
+                      <label class="text-gray-600 m-1" for="name">Text</label>
+                      <input type="text" [(ngModel)]="text" class="p-1 m-1 border border-zinc-400">
+                    </div>
+
+                    <div class="w-full flex flex-col m-1" >
+                        <label class="text-gray-600 m-1" for="type">Center</label>
+                        <select [(ngModel)]="center" class="form-select p-1 m-1 border border-zinc-400">
+                            @for( type of yesNo; track type){
+                                <option [value]="type">
+                                {{ type }}
+                                </option>
+                            }
+                          </select>
+                      </div>
+          
+                    <div class="w-full flex flex-col m-1" >
+                      <label class="text-gray-600 m-1" for="name">Class</label>
+                      <input type="text" [(ngModel)]="class" class="p-1 m-1 border border-zinc-400">
+                    </div>
+
+                    <div class="w-full flex flex-col m-1" >
+                        <label class="text-gray-600 m-1" for="name">Helper</label>
+                        <input type="text" [(ngModel)]="helper" class="p-1 m-1 border border-zinc-400">
+                      </div>
+          
+                    <div class="w-full flex flex-col m-1" >
+                      <label class="text-gray-600 m-1" for="type">Width</label>
+                      <select [(ngModel)]="width" class="form-select p-1 m-1 border border-zinc-400">
+                          @for( wid of widths; track wid){
+                              <option [value]="wid">
+                              {{ wid }} &#37;
+                              </option>
+                          }
+                        </select>
+                    </div>
+                    </div>
+                </p-tabpanel>
+            <p-tabpanel value="1">
+              <div class="w-full flex flex-col m-1" >
+                <label class="text-gray-600 m-1" for="plugin">Select plugins</label>
+                <select [(ngModel)]="plugin" class=" p-1 m-1 border border-zinc-400">
+                    @for( p of plugins; track p){
+                        <option [value]="p">
+                        {{ p }}
+                        </option>
+                    }
+                  </select>
+              </div>
+            </p-tabpanel>
+            
+        </p-tabpanels>
+    </p-tabs>
+</div>

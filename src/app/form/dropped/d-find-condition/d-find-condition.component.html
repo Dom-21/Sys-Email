@@ -1,0 +1,8 @@
+<div class="flex justify-between w-full h-fit" [cdkDragData]="item" cdkDrag>
+    <div class="flex w-full justify-center" >
+        <p>--Dependant fields end--</p>
+    </div>
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="backdrop" (click)="onClose()"></div>
+<dialog open>
+  @if(edit){
+  <form (ngSubmit)="onCancel()">
+    <p></p>
+    <p>
+      <label for="title">Name</label>
+      <input type="text" id="title" name="title" [(ngModel)]="userName" />
+    </p>
+    <p>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" [(ngModel)]="userEmail" />
+    </p>
+    <p>
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" [(ngModel)]="userPhone" />
+    </p>
+
+    <p>
+      <label for="summary">Summary</label>
+      <textarea
+        id="summary"
+        rows="5"
+        name="summary"
+        [(ngModel)]="summary"
+      ></textarea>
+    </p>
+    
+
+    <p>
+      <label for="due-date">DOB</label>
+      <input
+        type="date"
+        id="due-date"
+        name="due-date"
+        [(ngModel)]="birthDate"
+      />
+    </p>
+    <p>
+      <label for="gender">Gender</label>
+      <!-- app.component.html -->
+      <select [(ngModel)]="userGender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </p>
+
+    <p>
+        <label for="address">Address</label>
+        <textarea
+          id="address"
+          rows="5"
+          name="address"
+          [(ngModel)]="userAddress"
+        ></textarea>
+      </p>
+
+    <p class="actions">
+      <button type="button" (click)="onCancel()">Cancel</button>
+      <button
+        class="bg-blue-700 m-2 p-1 px-2 rounded text-slate-50"
+        type="submit"
+      >
+        Update
+      </button>
+    </p>
+  </form>
+  } @else {
+  <div class="flex justify-between rounded-xl bg-gray-200">
+    <h2 class="text-indigo-950 font-semibold m-2" style="font-size: 1.5rem">
+      Profile
+    </h2>
+    <button
+      type="button"
+      class="bg-blue-700 border-zinc-300 border rounded text-slate-50 p-1 px-4 m-2"
+      (click)="onEdit()"
+    >
+      Edit
+    </button>
+  </div>
+  <div class="bg-slate-100 m-2 w-full">
+    <img
+      class="w-24 h-24 rounded-full border-zinc-400 border mx-auto"
+      src="/images/logo/image.png"
+      alt="Profile"
+    />
+    <div class="w-full h-fit px-2 text-indigo-950 font-semibold text-center">
+      <h2 style="font-size: 1.2rem">{{ userName }}</h2>
+    </div>
+    <h3 class="px-2 text-center text-yellow-600 underline">
+      {{ userEmail }}
+    </h3>
+  </div>
+  <div class=" border border-zinc-400 rounded-lg">
+        <div class="text-center p-2 " [innerHTML]="summary"></div>
+  <div class="p-2">
+    <h3 class="text-indigo-950">Other Info:</h3>
+    <div class="mt-1 ">
+      <ul class="mx-8 list-disc">
+        <li>
+          <p>Phone: {{ userPhone }}</p>
+        </li>
+        <li>
+          <p>Address: {{ userAddress}}</p>
+        </li>
+        <li><p>Gender: {{userGender}}</p></li>
+        <li>
+          <p>Birth Date: {{ birthDate }}</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+  </div>
+  }
+</dialog>

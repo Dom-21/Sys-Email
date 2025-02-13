@@ -1,0 +1,22 @@
+<div class="flex gap-1" [cdkDragData]="item" cdkDrag>
+    
+        @for(i of item.property; track i){
+            <div [className]="'flex ' + getWidth(i.width())+' '+isCenter(i.center()) " >
+                <button 
+                [name]="i.name()" 
+                [type]="i.type()" 
+                [value]="i.value()"
+                [className]="i.class()+' '"
+                > {{i.text()}}</button>
+                @if(i.helper()){
+                    <p class="text-gray-400">{{ i.helper() }}</p>
+                }
+            </div>
+        }
+ 
+        
+        <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+            <i class="pi pi-trash text-gray-700 mx-2"></i>
+        </div>
+</div>
+

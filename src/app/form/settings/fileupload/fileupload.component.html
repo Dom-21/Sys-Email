@@ -1,0 +1,65 @@
+<div class="card">
+    <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0">Main</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="name">Checkbox group name</label>
+                    <input type="text" [(ngModel)]="name" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="name">Checkbox group label</label>
+                    <input type="text" [(ngModel)]="label" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="helper">Helper</label>
+                    <input type="text" [(ngModel)]="helper" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="name">Default value</label>
+
+                    <select [(ngModel)]="uploader" class="form-select p-1 m-1 border border-zinc-400">
+                        @for( wid of options; track wid){
+                        <option [value]="wid">{{ wid }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="helper">upload Dir.</label>
+                    <input type="text" [(ngModel)]="uploaddir" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="helper">Limit</label>
+                    <input type="text" [(ngModel)]="limit" class="p-1 m-1 border border-zinc-400" />
+                </div>
+                
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="helper">Extensions</label>
+                    <input type="text" [(ngModel)]="extensions" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="helper">File max size</label>
+                    <input type="text" [(ngModel)]="maxsize" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="helper">Class</label>
+                    <input type="text" [(ngModel)]="class" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+            </p-tabpanel>
+
+        </p-tabpanels>
+    </p-tabs>
+</div>

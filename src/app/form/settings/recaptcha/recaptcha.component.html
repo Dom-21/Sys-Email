@@ -1,0 +1,32 @@
+<div class="card">
+    <p-tabs value="0">
+        <p-tablist>
+            <p-tab value="0">Main</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+                <div class="m-2 p-2 bg-slate-200 rounded text-lg">
+                    <p>
+                        Get your private and public keys on Google Recaptcha website.
+                    </p>
+                    <hr class="border-t border-zinc-300 m-2 mt-5 mb-10">
+                    <p>The version to use is Recaptcha V3.</p>
+                    <hr class="border-t border-zinc-300 m-2 mt-5 mb-10">
+                    <p>If you don't enter a valid key the Recaptcha will not show.</p>
+
+                </div>
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="name">Public key</label>
+                    <input type="text" [(ngModel)]="publickey" class="p-1 m-1 border border-zinc-400" />
+                </div>
+                <div class="w-full flex flex-col m-1">
+                    <label class="text-gray-600 m-1" for="name">Private key</label>
+                    <input type="text" [(ngModel)]="privatekey" class="p-1 m-1 border border-zinc-400" />
+                </div>
+
+            </p-tabpanel>
+         
+            
+        </p-tabpanels>
+    </p-tabs>
+</div>

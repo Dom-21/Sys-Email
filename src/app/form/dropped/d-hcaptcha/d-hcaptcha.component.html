@@ -1,0 +1,14 @@
+<div [className]="'flex h-fit'+getWidth(item.property.width())+' '+getTheme(item.property.theme())" [cdkDragData]="item" cdkDrag>
+    <div class="example-box flex justify-center items-center  w-1/4" >
+        {{ item.property.label() }}
+    </div>
+    
+    <div class="w-3/4 flex justify-center items-center flex-col " >
+       <img class="w-20 h-20" src="/images/logo/hcaptcha.png" alt="hcaptcha">
+    </div>
+    
+    
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>

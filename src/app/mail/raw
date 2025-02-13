@@ -1,0 +1,177 @@
+<div class="overflow-y-auto rounded bg-slate-50 shadow-md">
+  @if(message){
+  <div class="flex justify-between">
+    <div class="flex p-2">
+      <button (click)="goBack()">
+        <i class="p-1 pi pi-arrow-left text-gray-800 hover:bg-gray-200 rounded"></i>
+      </button>
+      <p class="text-xl mx-2 p-1 text-gray-800">{{ message.subject }}</p>
+      <button class="mt-2 h-6 px-1 rounded font-semibold text-white bg-blue-700">
+        {{ component }}
+      </button>
+    </div>
+
+    <div>
+      <i class="m-2 p-1 pi pi-print text-gray-800 hover:bg-gray-200 rounded" style="font-size: 1.2rem"></i>
+    </div>
+  </div>
+  <hr class="border-t-zinc-200 border-t" />
+  <div class="md:flex md:justify-between">
+    <div class="flex">
+      <div class="w-fit relative">
+        <img src="/images/logo/image.png" alt="Profile" class="m-3 w-10 h-10 border-gray-300 border-2 rounded-full" />
+      </div>
+      <div class="mt-2">
+        <div class="flex">
+          <p class="font-semibold text-lg">{{ extractName(message.from) }}</p>
+          <div [ngClass]="getBackgroundColor('hello')" class="m-3 py-1 h-2 w-2 rounded-full"></div>
+        </div>
+        <div class="flex">
+          <p class="font-thin text-s text-gray-400">to me</p>
+          <i class="p-1.5 text-gray-400 pi pi-angle-down"></i>
+        </div>
+      </div>
+      <div class="m-2 py-0.5">
+        <p class="text-gray-400 font-thin">1 days ago</p>
+      </div>
+    </div>
+
+    <div class="mx-5">
+      <div class="max-sm:hidden mx-2 my-2 h-fit p-1 rounded group relative inline-block" (click)="onToggleMarked()">
+        @if(!message.isStarred){
+        <i class="pi pi-star text-yellow-400"></i>
+        } @else {
+        <i class="pi pi-star-fill text-yellow-400"></i>
+        }
+        <div
+          class="absolute left-1/2 transform -translate-x-1/2 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-sm rounded px-3 py-1 shadow-lg">
+          Marked
+        </div>
+      </div>
+
+      <div class="max-sm:hidden mx-2 h-fit my-2 p-1 rounded group relative inline-block" (click)="onToggleImportant()">
+        @if(!message.isImportant){
+        <i class="pi pi-bookmark text-indigo-900"></i>
+        } @else {
+        <i class="pi pi-bookmark-fill text-indigo-900"></i>
+        }
+        <div
+          class="absolute left-1/2 transform -translate-x-1/2 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-sm rounded px-3 py-1 shadow-lg">
+          Important
+        </div>
+      </div>
+
+      <div class="max-sm:hidden mx-2 h-fit my-2 pt-1 rounded group relative inline-block" (click)="onClickReply()">
+        <i class="mt-1 pi pi-directions-alt text-indigo-900" style="font-size: 1.3rem"></i>
+        <div
+          class="absolute left-1/2 transform -translate-x-1/2 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-sm rounded px-3 py-1 shadow-lg">
+          Reply
+        </div>
+      </div>
+
+      <div class="max-sm:hidden mx-2 h-fit my-2 pt-1 rounded group relative inline-block" (click)="onClickForward()">
+        <i class="mt-1 pi pi-forward text-indigo-900" style="font-size: 1.3rem"></i>
+        <div
+          class="absolute left-1/2 transform -translate-x-1/2 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-800 text-white text-sm rounded px-3 py-1 shadow-lg">
+          Forward
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="m-2 p-2 mt-4 font-medium text-gray-600">
+    <div [innerHTML]="message.body"></div>
+  </div>
+  <!-- <div *ngIf="message.attachments && message.attachments.length > 0">
+    <p class="font-medium text-gray-600 m-2">Attachments:</p>
+    <hr class="border-t-zinc-200 border-t" />
+    <div *ngFor="let attachment of message.attachments" class="flex m-2">
+      <div class="flex items-center space-x-2 w-max justify-between">
+        <div><i class="pi pi-paperclip text-gray-500"></i></div>
+
+        <a
+          [href]="attachment"
+          target="_blank"
+          class="ml-2 text-blue-500 hover:underline"
+          [attr.download]="attachment.filename"
+        >
+          <i class="pi pi-download text-white bg-blue-700 p-1 rounded"></i>
+        </a>
+
+        <p class="text-sm text-gray-600">{{ attachment.filename }}</p>
+      </div>
+    </div>
+  </div> -->
+
+  <div *ngIf="message.attachments && message.attachments.length > 0">
+    <p class="font-medium text-gray-600 m-2">Attachments:</p>
+    <hr class="border-t-zinc-200 border-t" />
+    <div *ngFor="let attachment of message.attachments" class="flex m-2">
+      <div class="flex items-center space-x-2 w-max justify-between">
+        <div><i class="pi pi-paperclip text-gray-500"></i></div>
+
+        <a [href]="attachment" target="_blank" [attr.download]="attachment.filename" class="ml-2 text-blue-500 hover:underline">
+          <i class="pi pi-download text-white bg-blue-700 p-1 rounded"></i>
+        </a>
+
+        <p (click)="openPreview(attachment)" class="text-sm text-gray-600">
+          {{ attachment.filename }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Preview Modal
+    <div *ngIf="showPreview && selectedAttachment"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div class="bg-white p-4 rounded shadow-lg w-96 max-w-full">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-semibold">
+            {{ selectedAttachment.filename }}
+          </h2>
+          <button (click)="closePreview()" class="text-gray-500 p-1 hover:bg-gray-200 rounded">
+            <i class="pi pi-times"></i>
+          </button>
+        </div>
+        <div class="mt-2">
+          
+
+          
+          <div *ngIf="isImage(selectedAttachment)">
+            <img [src]="getAttachmentUrl(selectedAttachment)" alt="Preview" class="w-full h-auto" />
+          </div>
+
+        
+          <div *ngIf="isPdf(selectedAttachment)">
+            <iframe [src]="getAttachmentUrl(selectedAttachment)" class="w-full h-64"></iframe>
+          </div>
+
+         
+          <div *ngIf="isVideo(selectedAttachment)">
+            <video [src]="getAttachmentUrl(selectedAttachment)" controls class="w-full h-auto"></video>
+          </div>
+
+          
+          <div *ngIf="isAudio(selectedAttachment)">
+            <audio [src]="getAttachmentUrl(selectedAttachment)" controls class="w-full h-auto"></audio>
+          </div>
+
+        
+          <div *ngIf="
+              !isImage(selectedAttachment) &&
+              !isPdf(selectedAttachment) &&
+              !isVideo(selectedAttachment) &&
+              !isAudio(selectedAttachment)
+            ">
+            <p class="text-center text-gray-500">
+              No preview available for this file type.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  
+  
+  </div>
+
+  }
+  
+</div>

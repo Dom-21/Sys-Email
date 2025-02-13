@@ -1,0 +1,51 @@
+<div class="panel overflow-x-hidden">
+    <div class="panel xl:flex p-3 xl:justify-between">
+        <div class="flex">
+            <button (click)="onFilterPersonal()"
+                class="m-2 p-2 lg:pr-10 border flex rounded-lg text-blue-400 border-blue-400 bg-transparent hover:bg-blue-400 hover:text-white">
+                <i class="p-2 pi pi-user"></i>
+                <label class="hidden lg:block p-1">Personal</label>
+            </button>
+
+            <button (click)="onFilterWork()"
+                class="flex m-2 p-2 lg:pr-10 border rounded-lg text-orange-400 border-orange-400 bg-transparent hover:bg-orange-400 hover:text-white">
+                <i class="p-2 pi pi-briefcase"></i>
+                <label class="hidden lg:block p-1">Work</label>
+            </button>
+
+            <button (click)="onFilterSocial()"
+                class="m-2 p-2 lg:pr-10 flex border rounded-lg text-green-400 border-green-400 bg-transparent hover:bg-green-400 hover:text-white">
+                <i class="p-2 pi pi-users"></i>
+                <label class="hidden lg:block p-1">Social</label>
+            </button>
+
+            <button (click)="onFilterPrivate()"
+                class="m-2 p-2 lg:pr-10 flex border rounded-lg text-red-400 border-red-400 bg-transparent hover:bg-red-400 hover:text-white">
+                <i class="p-2 pi pi-tag"></i>
+                <label class="hidden lg:block p-1">Promotoions</label>
+            </button>
+        </div>
+        <!-- <div class="flex lg:justify-center justify-start mx-4 xl:mt-5">
+            <div>
+                <p class="p-1 text-gray-800 font-semibold" style="font-size: 14px;">
+                    {{ startIndex }} - {{endIndex}} of {{totalMessages}}
+                </p>
+            </div>
+            <div>
+                <button (click)="previousPage()" [disabled]="currentPage === 1" class="pagination-btn">
+                    <i class="p-1 rounded pi pi-angle-left" style="font-size: 22px;"></i>
+                </button>
+            </div>
+            <div>
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-btn">
+                    <i class="p-1 rounded pi pi-angle-right" style="font-size: 22px;"></i>
+                </button>
+            </div>
+        </div> -->
+    </div>
+
+    <div class="panel">        
+        <router-outlet></router-outlet>
+    </div>
+
+</div>

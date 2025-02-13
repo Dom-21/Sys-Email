@@ -1,0 +1,20 @@
+<div [className]="'flex gap-10 ' + getWidth(item.property.width())" [cdkDragData]="item" cdkDrag>
+    <div class="example-box flex justify-center w-1/4" >
+        {{ item.property.label() }}
+        @if(item.property.require()){ <p class="text-red-600">&ast;</p> }
+    </div>
+    <div class="w-3/4 flex items-center flex-col">
+        @for(opt of item.property.options(); track opt){
+        <div class="flex items-center w-full">
+            <input class="m-2 h-4 w-4 border-zinc-400 border" type="radio" [name]="opt.option" [value]="opt.value"
+                [checked]="item.property.value() === opt.value" (change)="item.property.value.set(opt.value)" />
+            <label class="p-1" for="option">{{opt.option}}</label>
+        </div>
+        } @if(item.property.helper()){
+            <p class="text-gray-400">{{ item.property.helper() }}</p>
+        }
+    </div>
+    <div class="flex justify-center items-center" (click)="onClickDelete(item)">
+        <i class="pi pi-trash text-gray-700 mx-2"></i>
+    </div>
+</div>

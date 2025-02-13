@@ -1,0 +1,163 @@
+<div class=" bg-slate-50 rounded min-h-[calc(100vh-100px)] border-1 border-zinc-200 shadow-lg overflow-hidden mt-2">
+    <div class="card flex md:justify-between border-b-2 border-slate-200">
+
+        <div class="card flex">
+            <div class="sm:hidden mx-1 p-3" #tabsMenu>
+                <button (click)="onToggleTabs()">
+                    <i class="p-1 rounded pi pi-bars hover:bg-gray-200  bg-gray-100"></i>
+                </button>
+            </div>
+
+            @if(tabs){
+                <div class="absolute z-40 ">
+                    <app-tabs-section></app-tabs-section>
+                </div>
+            }
+            
+            <div class="py-3.5 px-2">
+                <button (click)="onClickReload()">
+                    <i class=" p-1 rounded pi pi-sync hover:bg-gray-200  bg-gray-100"></i>
+                </button>
+            </div>
+            <div class="py-3.5 px-2">
+                <button (click)="onClickArchieve()">
+                    <i class=" p-1 rounded pi pi-warehouse hover:bg-gray-200  bg-gray-100"></i>
+                </button>
+            </div>
+            <div class="py-3.5 px-2">
+                <button (click)="onClickSpam()">
+                    <i class=" p-1 rounded pi pi-exclamation-circle hover:bg-gray-200  bg-gray-100"></i>
+                </button>
+            </div>
+            <div class="py-3.5 px-2">
+                <div class="relative inline-block" #popoverContainer>
+                    <!-- Toggle Button -->
+                    <button (click)="toggleType()" class="relative">
+                        <i class="p-1 rounded pi pi-users hover:bg-gray-200 bg-gray-100"></i>
+                    </button>
+
+                    <!-- Popover -->
+                    @if(popOverType){
+                    <div class="absolute z-10 shadow bg-slate-50 rounded -left-16 top-8">
+                        <ul style="font-size: medium;">
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700">
+                                    <div class="bg-blue-400 rounded-full p-1 mt-2"></div>
+                                    <div>
+                                        <p class="font-normal mx-2">Personal</p>
+                                    </div>
+                                </button>
+                            </li>
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700">
+                                    <div class="bg-orange-400 rounded-full p-1 mt-2"></div>
+                                    <div>
+                                        <p class="font-normal mx-2">Social</p>
+                                    </div>
+                                </button>
+                            </li>
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700">
+                                    <div class="bg-green-400 rounded-full p-1 mt-2"></div>
+                                    <div>
+                                        <p class=" font-normal mx-2">Work</p>
+                                    </div>
+                                </button>
+                            </li>
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700">
+                                    <div class="bg-red-400 rounded-full p-1 mt-2"></div>
+                                    <div>
+                                        <p class=" font-normal mx-2">Promotions</p>
+                                    </div>
+                                </button>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                    }
+                </div>
+
+            </div>
+            <div class="py-3.5 px-2">
+                <button (click)="toggleMenu()">
+                    <i class=" p-1 rounded pi pi-ellipsis-v hover:bg-gray-200  "></i>
+                </button>
+                @if(popOverMenu){
+                <div class="relative w-[200px]">
+                    <div class="m-1 absolute z-10 -left-32 shadow top-1 bg-slate-50 rounded" #popoverMenu>
+                        <ul style="font-size: small;">
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700"
+                                (click)="onClickRead()">
+                                    <i class="p-1 pi pi-check-square"></i>
+                                    <p class="p-1 font-normal">Mark as Read</p>
+                                </button>
+                            </li>
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700"
+                                (click)="onClickUnread()">
+                                    <i class="p-1 pi pi-book"></i>
+                                    <p class="p-1 font-normal">Mark as Unread</p>
+                                </button>
+                            </li>
+                            <li>
+                                <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700"
+                                (click)="trashSelectedEmails()">
+                                    <i class="p-1 pi pi-trash"></i>
+                                    <p class="p-1 font-normal">Trash</p>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                }
+
+            </div>
+        </div>
+
+        <div class="card flex mr-5">
+            <div class="max-sm:hidden relative px-3 py-2">
+                <input [formControl]="searchControl" type="text" placeholder="Search"
+                    class="p-1 pl-10 pr-2 border rounded-lg" />
+                <button>
+                    <i class="px-3 py-2 pi pi-search absolute top-2 left-2"
+                        style="font-size: 1.1rem; color: rgb(0, 0, 88);"></i>
+                </button>
+            </div>
+            <div class="hidden max-sm:block py-3.5 px-2">
+                <label for="searchBarToggle" class="flex items-center cursor-pointer" (click)="toggleSearchBar()">
+                    <i class="p-1 pi pi-search text-gray-800 hover:bg-gray-200  bg-gray-100 rounded"
+                        ></i>
+                </label>
+                @if(searchBar){
+                    <!-- Background overlay -->
+                    <div class="fixed inset-0 bg-black opacity-40 z-10" (click)="toggleSearchBar()"></div>
+            
+                    <!-- Search Input -->
+                    <input [formControl]="searchControl" type="text" placeholder="Search"
+                        class="fixed top-5 transform -translate-x-3/4 z-20 mx-10 w-[300px] p-2 border rounded-lg text-gray-900 bg-gray-100 shadow-lg" />
+                }
+            </div>
+            <div class="py-3.5 px-2">
+                <button>
+                    <i class=" p-1 rounded pi pi-cog hover:bg-gray-200  bg-gray-100 text-indigo-950"></i>
+                </button>
+            </div>
+            <div class="py-3.5 px-2">
+                <button>
+                    <i class=" p-1 rounded pi pi-question-circle hover:bg-gray-200  bg-gray-100"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class=" relative overflow-hidden">
+        <router-outlet></router-outlet>
+
+    </div>
+
+
+</div>

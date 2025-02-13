@@ -1,0 +1,46 @@
+<div cdkDropListGroup class="mx-10 mt-5 w-[95%] sm:flex sm:justify-between max-sm:grid">
+  <div class="card example-container max-sm:w-80 sm:w-80 border border-gray-700 h-screen overflow-y-auto">
+    <h2 class="bg-gray-800 text-white font-medium text-lg px-2">COMPONENTS</h2>
+
+    <div cdkDropList [cdkDropListData]="components" class="flex justify-center">
+      <ul class="grid sm:grid-cols-2">
+        @for (item of components; track item) {
+        <li>
+          <div
+            class="flex flex-col m-4 w-28 h-24 border border-1 rounded bg-white justify-center items-center text-gray-800 font-normal"
+            [cdkDragData]="item" cdkDrag>
+            <img [src]="item.icon" class="h-10 w-10" alt="Icon">
+            <p class="font-medium text-gray-600">{{ item.key }}</p>
+          </div>
+        </li>
+        }
+        <li>
+          <div class="flex flex-col m-4 w-28 h-24 border border-1 rounded bg-white justify-center items-center text-gray-800 font-normal">
+            <button class="grid mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700" [routerLink]="['/dashboard']"
+              [routerLinkActive]="['router-link-active']" >
+              <i class="pi pi-desktop p-2 text-gray-900" style="font-size: 1.8rem;"></i>
+              <p class="font-medium text-gray-600">Dashboard</p>
+            </button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card example-container max-sm:w-80 sm:w-[calc(40vw-10px)] border border-gray-700  h-screen overflow-y-auto">
+    <h2 class="bg-gray-800 text-white font-medium text-lg px-2 ">DROP COMPONENTS HERE TO BUILD YOUR FORM</h2>
+    <div cdkDropList [cdkDropListData]="formService.dropped()" class="example-list overflow-y-auto"
+      (cdkDropListDropped)="drop($event)">
+      <app-dropped></app-dropped>
+    </div>
+
+  </div>
+
+  <div class="example-container max-sm:w-80 sm:w-[calc(30vw-10px)] border border-gray-700 h-screen overflow-y-auto">
+    <h2 class="bg-gray-800 text-white font-medium text-lg pl-2">COMPONENT SETTINGS</h2>
+    <div class="overflow-y-auto">
+
+      <app-settings></app-settings>
+    </div>
+  </div>
+</div>

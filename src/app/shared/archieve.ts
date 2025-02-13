@@ -1,0 +1,68 @@
+import { message } from "./messages";
+
+export const archive: message[] = [
+    {
+      name: 'James Davis',
+      title: 'Work Update',
+      body: `Voluptatum magni eum libero officia iusto consectetur doloribus accusamus quisquam!`,
+      type: 'work',
+      time: '2025-01-04',
+      marked: false,
+      important: false,
+    },
+    {
+      name: 'Emma Taylor',
+      title: 'Personal Message',
+      body: `Dolor nesciunt alias earum veniam mollitia quos culpa voluptatem officiis.`,
+      type: 'personal',
+      time: '2025-01-05',
+      marked: true,
+      important: false,
+    },
+    {
+      name: 'Noah Moore',
+      title: 'Work Task',
+      body: `Dicta debitis illo obcaecati nostrum nulla, voluptatibus eveniet vel numquam?`,
+      type: 'work',
+      time: '2025-01-06',
+      marked: false,
+      important: true,
+    },
+    {
+      name: 'Ava Clark',
+      title: 'Social Catch-up',
+      body: `Saepe nobis odit sit unde aliquid laborum suscipit numquam veniam.`,
+      type: 'personal',
+      time: '2025-01-07',
+      marked: false,
+      important: false,
+    },
+    {
+      name: 'Liam White',
+      title: 'Project Update',
+      body: `Eligendi reprehenderit corporis ad tempora, quo dolorum consequatur odio maiores.`,
+      type: 'work',
+      time: '2025-01-08',
+      marked: true,
+      important: true,
+    },
+    {
+      name: 'Mia Walker',
+      title: 'Social Update',
+      body: `Omnis harum officia pariatur aliquid dolore. Quibusdam delectus esse ullam!`,
+      type: 'personal',
+      time: '2025-01-09',
+      marked: false,
+      important: false,
+    },
+    {
+      name: 'William Hall',
+      title: 'Reminder',
+      body: `Magni non eos alias neque error dolore perspiciatis. Saepe, ipsa?`,
+      type: 'social',
+      time: '2025-01-10',
+      marked: true,
+      important: false,
+    },
+  ];
+  

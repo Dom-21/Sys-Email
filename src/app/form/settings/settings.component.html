@@ -1,0 +1,63 @@
+<div class="bg-slate-50">
+    @if(selectedItem()){
+        @switch (selectedItem()?.key) {
+            @case('Input'){
+                <app-input></app-input>
+            }
+            @case('Textarea'){
+                <app-textarea></app-textarea>
+            }
+            @case('Select'){
+                <app-select></app-select>
+            }
+        
+            @case('Radio'){
+                <app-radio></app-radio>
+            }
+            @case('Checkbox'){
+                <app-checkbox></app-checkbox>
+            }
+            @case('Fileupload'){
+                <app-fileupload></app-fileupload>
+            }
+        
+            @case('Hcaptcha'){
+                <app-hcaptcha></app-hcaptcha>
+            }
+            @case('Recaptcha'){
+                <app-recaptcha></app-recaptcha>
+            }
+        
+            @case('Button'){
+               <app-button></app-button>
+            }
+            @case('Btn group'){
+                <app-button-group></app-button-group>
+            }
+        
+            @case('Start Condition'){
+               <app-start-condition></app-start-condition>
+            }
+            @case('Find Condition'){
+                <app-find-condition></app-find-condition>
+            }
+        
+            @case('Title'){
+                <app-title></app-title>
+            }
+            @case('Paragraph'){
+                <app-paragraph></app-paragraph>
+            }
+            @case('HTML'){
+                <app-html></app-html>
+            }
+            @default {
+                <p>No Components selected</p>
+            }
+        }
+        
+    }
+    @else {
+        <p>Please select component</p>
+    }
+</div>
