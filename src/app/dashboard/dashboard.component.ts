@@ -9,7 +9,7 @@ import { DashboardService, Email } from './dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
-  standalone:true,
+  standalone: true,
   imports: [TabSectionComponent, NavBarComponent, RouterOutlet],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
@@ -17,55 +17,32 @@ import { DashboardService, Email } from './dashboard.service';
 export class DashboardComponent {
   authService = inject(AuthService);
 
-  isAuthenticated = false;
-  emailSubscription: any;
-  userInfo: any;
+  constructor(
+    private dashBoardService: DashboardService,
+    private googleApi: GoogleApiService
+  ) {}
 
-  constructor(private dashBoardService: DashboardService,
-    private googleApi: GoogleApiService,
-  ){
-    if(googleApi.isLoggedIn()){
-      googleApi.userProfileSubject.subscribe( info => {
-        this.userInfo = info
-        if (this.userInfo) {
-          this.fetchAndStoreEmails(); // Call getEmails() after authentication
-        }
-      })
+  async ngOnInit(): Promise<void> {
+    if (this.googleApi.isLoggedIn()) {
+      await this.dashBoardService.fetchAndStoreEmails(); // Fetch emails immediately if logged in
     }
   }
 
-  ngOnInit(): void {
-   
-     
-
-
-    if(this.googleApi.isLoggedIn()){
-      this.fetchAndStoreEmails();
-
-      // interval(10000).subscribe(() => {
-      //   this.fetchAndStoreEmails();
-      // });//execute 30s after
-    }
-  }
-
-  async fetchAndStoreEmails() {
+  async fetchAndStoreEmails(): Promise<void> {
     if (!this.googleApi.isLoggedIn()) {
       return;
     }
 
-    const userId = 'me';
-    const messages = await lastValueFrom(this.googleApi.emails(userId));
-    const emailList: Email[] = [];
+    try {
+      const userId = 'me';
+      const messages = await lastValueFrom(this.googleApi.emails(userId));
 
-    for (const element of messages.messages) {
-      const mail = await lastValueFrom(this.googleApi.getMail(userId, element.id));
-      
-      this.dashBoardService.storeEmail(mail);
+      for (const element of messages.messages) {
+        const mail = await lastValueFrom(this.googleApi.getMail(userId, element.id));
+        this.dashBoardService.storeEmail(mail);
+      }
+    } catch (error) {
+      console.error("Error fetching emails:", error);
     }
-
-    // this.dashBoardService.storeEmails(emailList); 
   }
-
-  
-  }
-
+}

@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { RouterOutlet } from '@angular/router';
 import { GoogleApiService } from '../shared/google-api.service';
 import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
+import { DashboardService } from '../dashboard/dashboard.service';
 
 @Component({
   selector: 'app-mail-list',
@@ -33,10 +34,12 @@ export class MailListComponent {
 
   loading: boolean = true;
 
-  constructor(private googleApiService: GoogleApiService) { }
+  constructor(private googleApiService: GoogleApiService, private dashBoardService: DashboardService) { }
 
-  ngOnInit(): void {
-    this.fetchEmails();
+  async ngOnInit(): Promise<void> {
+    if (this.googleApiService.isLoggedIn()) {
+      await this.dashBoardService.fetchAndStoreEmails(); // Fetch emails immediately if logged in
+    }
   }
 
   fetchEmails(): void {

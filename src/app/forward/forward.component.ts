@@ -91,8 +91,9 @@ export class ForwardComponent {
       this.selectedFiles
     ).subscribe({
       next: () => {
+        this.router.navigate(['dashboard']);
         alert('Email forwarded successfully!');
-        this.reset();
+        
       },
       error: (err: { message: string }) =>
         alert('Failed to forward email: ' + err.message),

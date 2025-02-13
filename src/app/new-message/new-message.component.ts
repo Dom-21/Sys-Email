@@ -12,6 +12,7 @@ import { GoogleApiService } from '../shared/google-api.service';
 import { TabSectionComponent } from '../tabs-section/tabs-section.component';
 import { CommonModule } from '@angular/common';
 import { EmailDetails } from '../shared/fetched-mail.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-message',
@@ -40,7 +41,7 @@ export class NewMessageComponent implements OnInit {
   tabs = false;
   @ViewChild('tabsMenu') tabsMenu!: ElementRef;
 
-  constructor(private googleApiService: GoogleApiService) { }
+  constructor(private googleApiService: GoogleApiService, private router: Router) { }
 
   ngOnInit(): void { }
 
@@ -77,7 +78,10 @@ export class NewMessageComponent implements OnInit {
     }
 
     this.googleApiService.sendEmail(userId, rawMail).subscribe(
-      (response) => alert('Email sent successfully'),
+      (response) => {
+        this.router.navigate(['/dashboard']);
+        alert('Email sent successfully')
+      },
       (error) => {
         console.error('Error sending email:', error);
         console.error('Raw Email Content:', rawMail);
@@ -155,7 +159,10 @@ ${fileData}
     }
 
     this.googleApiService.saveDraft('me', rawMail).subscribe({
-      next: (response) => alert('Draft saved successfully'),
+      next: (response) => {
+        alert('Draft saved successfully');
+        this.router.navigate(['/dashboard/inbox']);
+      },
       error: (err) => console.error('Error saving draft:', err)
     });
   }

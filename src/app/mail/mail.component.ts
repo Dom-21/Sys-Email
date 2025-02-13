@@ -33,9 +33,9 @@ export class MailComponent implements OnInit {
         
         this.googleApiService.markAsRead('me', this.message.id).subscribe({
             next: () => {
-                console.log('Email marked as read');
+                // console.log('Email marked as read');
                 if(this.message){
-                  console.log("Read");
+                  // console.log("Read");
                   this.message.isUnread = false;
                   this.message.labels = this.message?.labels.filter(label => label !== 'UNREAD'); 
                 }

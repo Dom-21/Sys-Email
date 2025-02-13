@@ -1,7 +1,8 @@
 import { EventEmitter, Injectable, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, lastValueFrom } from 'rxjs';
+import { GoogleApiService } from '../shared/google-api.service';
 
 
 export interface Email {
@@ -34,7 +35,7 @@ export interface Email {
 export class DashboardService implements OnInit{
  
 
-  constructor(private router: Router){}
+  constructor(private router: Router, private googleApi: GoogleApiService){}
   
   private emailsSubject = new BehaviorSubject<Email[]>([]);
   emails$ = this.emailsSubject.asObservable(); 
@@ -46,6 +47,7 @@ export class DashboardService implements OnInit{
       
   }
 
+  
   
 
   storeEmail(email: Email) {
@@ -70,4 +72,23 @@ export class DashboardService implements OnInit{
       this.router.navigate([currentUrl]);
     });
   }
+
+  async fetchAndStoreEmails(): Promise<void> {
+    if (!this.googleApi.isLoggedIn()) {
+      return;
+    }
+
+    try {
+      const userId = 'me';
+      const messages = await lastValueFrom(this.googleApi.emails(userId));
+
+      for (const element of messages.messages) {
+        const mail = await lastValueFrom(this.googleApi.getMail(userId, element.id));
+        this.storeEmail(mail);
+      }
+    } catch (error) {
+      console.error("Error fetching emails:", error);
+    }
+  }
+
 }

@@ -3,16 +3,20 @@ import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { Observable, Subject } from 'rxjs';
 
-const authCodeFlowConfig: AuthConfig = {
+const getRedirectUri = () => {
+  if (window.location.hostname === 'localhost') {
+    return 'http://localhost:4201/'; // Works for both localhost:4200 and localhost:4201
+  }
+  return 'https://sys-email.web.app/'; // Production URL
+};
+
+export const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
   strictDiscoveryDocumentValidation: false,
-  redirectUri: 'https://sys-email.web.app/',
+  redirectUri: 'https://sys-email.web.app/', 
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
-    // '<your-client-id-here (go to google console to create gmail api client id)>',
-
   scope:
     'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
-
   showDebugInformation: true,
 };
 

@@ -82,7 +82,7 @@ export class ReplyComponent implements OnInit {
   }
 
   replyToEmail() {
-    console.log("Fetched MEssage: ", this.message);
+    // console.log("Fetched MEssage: ", this.message);
     this.replyEmail(
       this.message,
       this.message.from,
@@ -103,7 +103,7 @@ export class ReplyComponent implements OnInit {
     }
 
     const userId = 'me';
-    console.log(this.to);
+    // console.log(this.to);
 
     const rawMail = await this.buildReplyEmail(
       originalMessage,
@@ -114,11 +114,14 @@ export class ReplyComponent implements OnInit {
       console.error('Error: Failed to build reply email.');
       return;
     }
-    console.log(rawMail);
+    // console.log(rawMail);
 
 
     this.googleApiService.sendReplyEmail(userId, rawMail, threadId).subscribe(
-      (response) => console.log('reply sent successfully:', response),
+      (response) => {
+        this.router.navigate(['/dashboard']);
+        alert('Reply sent successfully.')
+      },
       (error) => {
         console.error('error sending reply:', error);
         console.error('raw Email:', rawMail);
@@ -171,7 +174,7 @@ ${fileData}
    
 emailContent += `--${boundary}--`;
 
-    console.log('Raw Email Content:\n', emailContent);
+    // console.log('Raw Email Content:\n', emailContent);
     return this.encodeBase64(emailContent);
 }
 

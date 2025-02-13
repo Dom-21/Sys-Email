@@ -116,7 +116,7 @@ export class MailTableComponent {
 
   onMessageClick(message: EmailDetails) {
     if(this.component==='drafts'){
-      console.log("drafts");
+      // console.log("drafts");
       this.fetchedEmailService.currentMessage.set(message);
       this.router.navigate(['/dashboard/mail-draft']);
     }else{
