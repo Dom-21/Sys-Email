@@ -7,8 +7,8 @@ const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
   strictDiscoveryDocumentValidation: false,
   redirectUri: 'http://localhost:4200',
-  clientId: 
-    '<your-client-id-here (go to google console to create gmail api client id)>',
+  clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
+    // '<your-client-id-here (go to google console to create gmail api client id)>',
 
   scope:
     'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
