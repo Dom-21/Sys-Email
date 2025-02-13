@@ -1,16 +1,15 @@
 {
   "hosting": {
-    "public": "docs",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "public": "docs/browser",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "**/*.js",
+        "headers": [{ "key": "Content-Type", "value": "application/javascript" }]
+      }
     ],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "**", "destination": "/index.html" }
     ]
   }
 }
