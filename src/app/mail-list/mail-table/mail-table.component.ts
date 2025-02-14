@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -14,30 +14,32 @@ import { GoogleApiService } from '../../shared/google-api.service';
   styleUrl: './mail-table.component.css'
 })
 export class MailTableComponent {
-  @Input() messages: EmailDetails[] = []; // Input for passing the messages
+  @Input() messages: EmailDetails[]=[]; // Input for passing the messages
   @Input() component: string = '';
   @Output() toggleMarked = new EventEmitter<EmailDetails>(); // Output for marking
   @Output() toggleImportant = new EventEmitter<EmailDetails>(); // Output for marking important
   mailService: any;
+  loading = signal<boolean>(false);
 
  
   
 
-  constructor(private router: Router, private fetchedEmailService: FetchedMailService, private googleApiService: GoogleApiService){
-
+  constructor(private router: Router, private fetchedEmailService: FetchedMailService, private googleApiService: GoogleApiService,){
+    this.loading = fetchedEmailService.loading;
   }
 
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-
+    this.loading = this.fetchedEmailService.loading;
   }
   onToggleMarked(message: EmailDetails): void {
     if (message.labels.includes('STARRED')) {
       
       this.googleApiService.unstarEmail('me', message.id).subscribe({
           next: () => {
-              console.log('Email marked');
+              // alert('Email marked as star');
+              this.fetchedEmailService.showMessage("Removed as starred.");
               message.isStarred = !message.isStarred;
               message.labels = message.labels.filter(label => label !== 'STARRED'); 
           },
@@ -48,7 +50,8 @@ export class MailTableComponent {
       this.googleApiService.starEmail('me', message.id).subscribe({
         next: () => {
               message.isStarred = !message.isStarred; 
-              console.log('Email unmarked');
+              this.fetchedEmailService.showMessage("Email marked as star.");
+              
               message.labels.push('STARRED'); 
           },
           error: (err) => console.error('Error marking email as important', err)
@@ -61,7 +64,8 @@ export class MailTableComponent {
       
       this.googleApiService.unmarkImportant('me', message.id).subscribe({
           next: () => {
-              // console.log('Email unmarked as important');
+              // alert('Email unmarked as important');
+              this.fetchedEmailService.showMessage('Removed as important')
               message.isImportant = !message.isImportant;
               message.labels = message.labels.filter(label => label !== 'IMPORTANT'); 
           },
@@ -72,7 +76,7 @@ export class MailTableComponent {
       this.googleApiService.markImportant('me', message.id).subscribe({
         next: () => {
               message.isImportant = !message.isImportant; 
-              // console.log('Email marked as important');
+              this.fetchedEmailService.showMessage('Email marked as important')
               message.labels.push('IMPORTANT'); 
           },
           error: (err) => console.error('Error marking email as important', err)

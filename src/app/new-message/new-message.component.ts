@@ -11,7 +11,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { GoogleApiService } from '../shared/google-api.service';
 import { TabSectionComponent } from '../tabs-section/tabs-section.component';
 import { CommonModule } from '@angular/common';
-import { EmailDetails } from '../shared/fetched-mail.service';
+import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -41,7 +41,7 @@ export class NewMessageComponent implements OnInit {
   tabs = false;
   @ViewChild('tabsMenu') tabsMenu!: ElementRef;
 
-  constructor(private googleApiService: GoogleApiService, private router: Router) { }
+  constructor(private googleApiService: GoogleApiService, private router: Router,private fetchedMailService: FetchedMailService) { }
 
   ngOnInit(): void { }
 
@@ -80,7 +80,8 @@ export class NewMessageComponent implements OnInit {
     this.googleApiService.sendEmail(userId, rawMail).subscribe(
       (response) => {
         this.router.navigate(['/dashboard']);
-        alert('Email sent successfully')
+        // alert('Email sent successfully')
+        this.fetchedMailService.showMessage('Email sent successfully');
       },
       (error) => {
         console.error('Error sending email:', error);
@@ -160,7 +161,8 @@ ${fileData}
 
     this.googleApiService.saveDraft('me', rawMail).subscribe({
       next: (response) => {
-        alert('Draft saved successfully');
+        // alert('Draft saved successfully');
+        this.fetchedMailService.showMessage('Draft saved successfully');
         this.router.navigate(['/dashboard/inbox']);
       },
       error: (err) => console.error('Error saving draft:', err)

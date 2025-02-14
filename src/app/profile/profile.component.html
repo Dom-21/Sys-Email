@@ -2,7 +2,6 @@
 <dialog open>
   @if(edit){
   <form (ngSubmit)="onCancel()">
-    <p></p>
     <p>
       <label for="title">Name</label>
       <input type="text" id="title" name="title" [(ngModel)]="userName" />
@@ -39,7 +38,7 @@
     <p>
       <label for="gender">Gender</label>
       <!-- app.component.html -->
-      <select [(ngModel)]="userGender">
+      <select [(ngModel)]="userGender" name="gender">
         <option value="Male">Male</option>
         <option value="Female">Female</option>
       </select>

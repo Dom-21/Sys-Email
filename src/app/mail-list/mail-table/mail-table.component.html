@@ -1,8 +1,8 @@
 
 <div class="min-h-[300px] max-h-screen overflow-hidden">
     <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
-       @if(messages.length>0){
-        <table class="sm:w-min md:w-full">
+       @if(messages && messages.length>0){
+        <table class="max-md:w-min md:w-full ">
             @for(message of messages; track message.messageId){
             <tr class="hover:bg-green-100 hover:font-semibold" >
                 <td>
@@ -27,15 +27,18 @@
                                 <i class="pi pi-bookmark-fill text-indigo-900"></i>
                                 }
                         </div>
-                        <div class="mx-2 my-2 p-1 rounded " (click)="onMessageClick(message)"
+                        <div class="mx-2 my-2 p-1 rounded " 
                         [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-semibold': message.isUnread }">
+                        <button (click)="onMessageClick(message)">
                             {{ extractName(message)}}
+                        </button>
+                            
                         </div>
                     </div>
                 </td>
                 <td (click)="onMessageClick(message)">
                     <div class="line-clamp-1 md:min-w-[300px] overflow-hidden  text-gray-700"
-                    [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-medium': message.isUnread }">
+                    [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800  font-semibold': message.isUnread }">
                        
                         <div [innerHTML]="message.body"></div>
                     </div>
@@ -54,8 +57,14 @@
             </tr>
         }
         </table>
-       }@else {
-        <div class="text-red-600 p-2 ">
+       }
+       @else if(loading()){
+        <div class="max-md:w-min md:w-full  flex text-gray-700 p-2 font-semibold justify-center items-center ">
+            <i class="pi pi-spin pi-spinner"></i><p>
+        </div>
+       }
+       @else{
+        <div class="max-md:w-min md:w-full text-red-600 p-2 min-w-[300px]">
             <p>No mails found in {{component}} mails.</p>
         </div>
        }

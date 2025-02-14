@@ -2,7 +2,6 @@ import { Component, inject } from '@angular/core';
 import { MailTableComponent } from '../mail-table/mail-table.component';
 
 import { message, trash } from '../../shared/messages';
-import { DashboardService } from '../../dashboard/dashboard.service';
 import { GoogleApiService } from '../../shared/google-api.service';
 import { EmailDetails, FetchedMailService } from '../../shared/fetched-mail.service';
 
@@ -19,14 +18,17 @@ export class TrashComponent {
   component: string = 'trash';
 
   constructor(
-    private dashboardService: DashboardService,
-    private fetchedEmailService: FetchedMailService
+    private fetchedMailService: FetchedMailService
   ) {}
 
   ngOnInit(): void {
-    this.dashboardService.emails$.subscribe((updatedEmails) => {
-      this.trashEmails = this.fetchedEmailService.getTrashEmails();
-    });
+    this.fetchedMailService.loading.set(true);
+
+
+    setTimeout(() => {
+      this.trashEmails = this.fetchedMailService.getMarkedEmails();
+      this.fetchedMailService.loading.set(false);
+    }, 100);
   }
 
  

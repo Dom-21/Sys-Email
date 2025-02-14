@@ -79,13 +79,13 @@
                 </div>
 
             </div>
-            <div class="py-3.5 px-2">
+            <div class="py-3.5 px-2 relative inline-block">
                 <button (click)="toggleMenu()">
                     <i class=" p-1 rounded pi pi-ellipsis-v hover:bg-gray-200  "></i>
                 </button>
                 @if(popOverMenu){
-                <div class="relative w-[200px]">
-                    <div class="m-1 absolute z-10 -left-32 shadow top-1 bg-slate-50 rounded" #popoverMenu>
+                <div class="w-[150px] absolute z-10 m-1 -left-32 shadow top-10 bg-slate-50 rounded" #popoverMenu>
+                    
                         <ul style="font-size: small;">
                             <li>
                                 <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700"
@@ -109,7 +109,7 @@
                                 </button>
                             </li>
                         </ul>
-                    </div>
+                    
                 </div>
                 }
 
@@ -124,6 +124,15 @@
                     <i class="px-3 py-2 pi pi-search absolute top-2 left-2"
                         style="font-size: 1.1rem; color: rgb(0, 0, 88);"></i>
                 </button>
+                @if(filteredEmails && searchControl.value?.length!==0){
+                    <div class="card w-[60vw] bg-white absolute z-30 top-14 transform -translate-x-[75%] mx-10 rounded shadow-md">
+                        <p-scrollpanel class="w-fit h-fit">
+                           <app-mail-table
+                           [messages]="filteredEmails"
+                           [component]="'search'"></app-mail-table>
+                        </p-scrollpanel>
+                    </div>
+                }
             </div>
             <div class="hidden max-sm:block py-3.5 px-2">
                 <label for="searchBarToggle" class="flex items-center cursor-pointer" (click)="toggleSearchBar()">
@@ -136,8 +145,20 @@
             
                     <!-- Search Input -->
                     <input [formControl]="searchControl" type="text" placeholder="Search"
-                        class="fixed top-5 transform -translate-x-3/4 z-20 mx-10 w-[300px] p-2 border rounded-lg text-gray-900 bg-gray-100 shadow-lg" />
-                }
+                        class="fixed top-5 transform -translate-x-[80%] z-20 mx-10 w-[300px] p-2 border rounded-lg text-gray-900 bg-gray-100 shadow-lg" />
+                    
+                        
+                
+                    }
+                    @if(filteredEmails && searchBar){
+                        <div class="card bg-white absolute z-50 transform -translate-x-[80%] z-20 mx-10 w-[300px]">
+                            <p-scrollpanel class="w-inherit h-fit">
+                               <app-mail-table
+                               [messages]="filteredEmails"
+                               [component]="'search'"></app-mail-table>
+                            </p-scrollpanel>
+                        </div>
+                    }
             </div>
             <div class="py-3.5 px-2">
                 <button>

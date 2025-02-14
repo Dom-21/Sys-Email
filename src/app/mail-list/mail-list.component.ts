@@ -1,69 +1,77 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { RouterOutlet } from '@angular/router';
 import { GoogleApiService } from '../shared/google-api.service';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
-import { DashboardService } from '../dashboard/dashboard.service';
+import { MailTableComponent } from "./mail-table/mail-table.component";
+
 
 @Component({
   selector: 'app-mail-list',
   standalone: true,
-  imports: [CheckboxModule, ButtonModule, RouterOutlet],
+  imports: [CheckboxModule, ButtonModule, RouterOutlet, ScrollPanelModule, MailTableComponent],
   templateUrl: './mail-list.component.html',
   styleUrl: './mail-list.component.css',
 })
 export class MailListComponent {
 
-  startIndex: any;
-  endIndex: any;
-  totalMessages: any;
-  currentPage: any;
-  previousPage() {
-    throw new Error('Method not implemented.');
-  }
-  totalPages: any;
-  nextPage() {
-    throw new Error('Method not implemented.');
-  }
-  onFilterPersonal() {
-    throw new Error('Method not implemented.');
-  }
-  private mailService = inject(FetchedMailService);
+  filterMails:EmailDetails[] = [];
+  
+  
+  private fetchedMailService = inject(FetchedMailService);
 
-
+  @ViewChild('filterContainer') filterContainer!: ElementRef;
   loading: boolean = true;
+  filter = false;
+  component='';
+  constructor(private googleApiService: GoogleApiService) { }
 
-  constructor(private googleApiService: GoogleApiService, private dashBoardService: DashboardService) { }
-
-  async ngOnInit(): Promise<void> {
-    if (this.googleApiService.isLoggedIn()) {
-      await this.dashBoardService.fetchAndStoreEmails(); // Fetch emails immediately if logged in
-    }
+  ngOnInit(){
+    this.filter = false;
   }
 
-  fetchEmails(): void {
-    const userId = 'me'; // or dynamically fetched from user data
-    this.googleApiService.emails(userId).subscribe(
-      (emails: EmailDetails[]) => {
-        console.log();
-        this.loading = false;
-      },
-      (error) => {
-        console.error('Error fetching emails', error);
-        this.loading = false;
-      }
+  onFilterPersonal() {
+    this.component='Personal';
+    this.filter = true;
+    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
+      email.labels.includes('CATEGORY_PERSONAL')
     );
   }
 
   onFilterWork() {
-    
+    this.filter = true;
+    this.component='Work';
+    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
+      email.labels.includes('CATEGORY_WORK')
+    );
   }
   onFilterSocial() {
-    
+    this.filter = true;
+    this.component='Social';
+    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
+      email.labels.includes('CATEGORY_SOCIAL')
+    );
   }
+  
   onFilterPrivate() {
-    
+    this.filter = true;
+    this.component='Promotions';
+    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
+      email.labels.includes('CATEGORY_PROMOTIONS')
+    );
   }
+
+  @HostListener('document:click', ['$event'])
+    onClickOutside(event: Event): void {
+      if (
+        this.filter &&
+        this.filterContainer &&
+        !this.filterContainer.nativeElement.contains(event.target)
+      ) {
+        this.filter = false;
+      }
+    }
 
 }

@@ -57,24 +57,15 @@ export class ForwardComponent {
   }
 
   save() {
-    const msg: message = {
-      name: this.to,
-      title: this.title,
-      body: 'CC : ' + this.Cc + '\n' + this.text,
-      type: this.Cc ? 'work' : 'personal',
-      time: Date.now().toString(),
-      marked: false,
-      important: false,
-    };
-    drafts.push(msg);
-    console.log(msg);
+    
   }
+  
   reset() {
     this.to = '';
     this.Cc = '';
     this.title = '';
     this.text = '';
-    this.router.navigate(['/dashboard/new-message']);
+    this.fetchedMailService.goBack();
   }
 
   selectedFiles: File[] = [];
@@ -91,12 +82,15 @@ export class ForwardComponent {
       this.selectedFiles
     ).subscribe({
       next: () => {
+        this.fetchedMailService.showMessage('Email forwarded successfully!');
         this.router.navigate(['dashboard']);
-        alert('Email forwarded successfully!');
+        // alert('Email forwarded successfully!');
         
       },
-      error: (err: { message: string }) =>
-        alert('Failed to forward email: ' + err.message),
+      error: (err: { message: string }) =>{
+        console.log(err.message);
+        this.fetchedMailService.showMessage("Failed to forward the mail.");
+      }
     });
   }
 

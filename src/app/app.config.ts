@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, RouterModule } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
@@ -36,7 +36,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-
+    
     { provide: OAuthService, useClass: OAuthService },
     { provide: OAuthStorage, useValue: localStorage }, // Store tokens in localStorage
     { provide: AuthConfig, useValue: authConfig },
@@ -49,6 +49,6 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura,
       },
-    }),
+    }), provideAnimationsAsync(),
   ],
 };

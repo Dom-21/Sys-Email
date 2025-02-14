@@ -1,17 +1,19 @@
-import { Component, ElementRef, EventEmitter, HostListener, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { Router, RouterOutlet } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TabSectionComponent } from "../tabs-section/tabs-section.component";
 import { FetchedMailService } from '../shared/fetched-mail.service';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { MailTableComponent } from "../mail-list/mail-table/mail-table.component";
 
 @Component({
   selector: 'app-inbox',
   standalone: true,
-  imports: [CheckboxModule, ButtonModule, RouterOutlet, ReactiveFormsModule, CommonModule, TabSectionComponent],
+  imports: [CheckboxModule, ButtonModule, RouterOutlet, ReactiveFormsModule, CommonModule, TabSectionComponent, ScrollPanelModule, MailTableComponent],
   templateUrl: './inbox.component.html',
   styleUrl: './inbox.component.css',
 })
@@ -33,27 +35,21 @@ export class InboxComponent implements OnInit, OnDestroy {
   @ViewChild('popoverMenu') popoverMenu!: ElementRef;
   @ViewChild('tabsMenu') tabsMenu!: ElementRef;
   emailSubscription!: Subscription;
+  filteredEmails: any;
 
 
 
 
   constructor(private eRef: ElementRef, private fetchedMailService: FetchedMailService, private router: Router) {
-
+    fetchedMailService.fetchEmails()
   }
 
 
   ngOnInit(): void {
-    this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300), // Wait for the user to stop typing for 300ms
-        distinctUntilChanged() // Only trigger if the value actually changes
-      )
-      .subscribe((searchTerm) => {
-        if (searchTerm) {
-          // Perform the search if searchTerm is not null and has at least 3 characters
-          this.fetchedMailService.searchMessages(searchTerm);
-        }
-      });
+    this.searchControl.valueChanges.subscribe(searchTerm => {
+      this.filteredEmails=this.fetchedMailService.searchMessages(searchTerm || '');
+    });
+
 
   }
   onClickReload() {
@@ -97,9 +93,14 @@ export class InboxComponent implements OnInit, OnDestroy {
 
 
   trashSelectedEmails() {
+    if(this.fetchedMailService.selectedMessages.length===0){
+      this.fetchedMailService.showMessage("Please select message(s)");
+      return;
+    }
     this.fetchedMailService.trashSelectedEmails().subscribe(
       (updatedEmails) => {
-        console.log('Emails moved to trash:', updatedEmails);
+        // alert("Email(s) moved to trash");
+        this.fetchedMailService.showMessage('Email(s) moved to trash');
         this.onClickReload();
       },
       (error) => {
@@ -109,29 +110,61 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   onClickUnread() {
+    if(this.fetchedMailService.selectedMessages.length===0){
+      this.fetchedMailService.showMessage("Please select message(s)");
+      return;
+    }
     this.fetchedMailService.markSelectedAsUnread().subscribe({
-      next: () => console.log('Selected emails marked as unread'),
+      next: () => {
+        // alert('Email(s) marked as unread');
+        this.fetchedMailService.showMessage('Email(s) marked as unread');
+        this.fetchedMailService.reloadCurrentRoute();
+      },
       error: (err) => console.error('Error marking emails as read', err)
     });
   }
 
   onClickRead() {
+    if(this.fetchedMailService.selectedMessages.length===0){
+      this.fetchedMailService.showMessage("Please select message(s)");
+      return;
+    }
     this.fetchedMailService.markSelectedAsRead().subscribe({
-      next: () => console.log('Selected emails marked as read'),
+      next: () => {
+        // alert('Email(s) marked as read');
+        this.fetchedMailService.showMessage('Email(s) marked as read');
+        this.fetchedMailService.reloadCurrentRoute();
+      },
       error: (err) => console.error('Error marking emails as read', err)
     });
   }
 
   onClickSpam() {
+    if(this.fetchedMailService.selectedMessages.length===0){
+      this.fetchedMailService.showMessage("Please select message(s)");
+      return;
+    }
     this.fetchedMailService.markSelectedAsSpam().subscribe({
-      next: () => console.log('Selected emails marked as spam'),
+      next: () => {
+        // alert('Email(s) marked as spam');
+        this.fetchedMailService.showMessage('Email(s) moved to spam');
+        this.fetchedMailService.reloadCurrentRoute();
+      },
       error: (err) => console.error('Error marking emails as read', err)
     });
   }
   
   onClickArchieve() {
+    if(this.fetchedMailService.selectedMessages.length===0){
+      this.fetchedMailService.showMessage("Please select message(s)");
+      return;
+    }
     this.fetchedMailService.markSelectedAsSpam().subscribe({
-      next: () => console.log('Selected emails moved to archieve'),
+      next: () => {
+        // alert('Email(s) marked as archieve');
+        this.fetchedMailService.showMessage('Email(s) moved to archieve');
+        this.fetchedMailService.reloadCurrentRoute();
+      },
       error: (err) => console.error('Error marking emails as read', err)
     });
   }
@@ -152,7 +185,7 @@ export class InboxComponent implements OnInit, OnDestroy {
     ) {
       this.popOverMenu = false;
     }
-    if (this.tabs && !this.tabsMenu.nativeElement.contains(event.target)) {
+    if (this.tabs && this.tabsMenu && !this.tabsMenu.nativeElement.contains(event.target)) {
       this.tabs = false;
     }
 

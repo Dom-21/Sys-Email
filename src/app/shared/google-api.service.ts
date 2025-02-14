@@ -1,11 +1,11 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { Observable, Subject } from 'rxjs';
+import { map, mergeMap, Observable, Subject, toArray } from 'rxjs';
 
 const getRedirectUri = () => {
   if (window.location.hostname === 'localhost') {
-    return 'http://localhost:4201/'; // Works for both localhost:4200 and localhost:4201
+    return 'http://localhost:4200'; // Works for both localhost:4200 and localhost:4201
   }
   return 'https://sys-email.web.app/'; // Production URL
 };
@@ -13,7 +13,7 @@ const getRedirectUri = () => {
 export const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
   strictDiscoveryDocumentValidation: false,
-  redirectUri: 'https://sys-email.web.app/', 
+  redirectUri: 'http://localhost:4200', 
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
   scope:
     'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
@@ -34,6 +34,7 @@ export interface UserInfo {
 })
 export class GoogleApiService {
   gmail = 'https://gmail.googleapis.com';
+  private API_URL = 'https://www.googleapis.com/gmail/v1/users/me/messages'
 
   userProfileSubject = new Subject<UserInfo>();
 
@@ -114,6 +115,29 @@ export class GoogleApiService {
 
     });
   }
+
+//========================================================================================================================
+  getAllEmailIds(): Observable<string[]> {
+    return this.httpClient.get<any>(this.API_URL, { headers: this.authHeader()}).pipe(
+      map(response => response.messages.map((msg: any) => msg.id)) 
+    );
+  }
+
+  // get full email details..
+  getEmailDetails(emailId: string): Observable<any> {
+    const url = `https://www.googleapis.com/gmail/v1/users/me/messages/${emailId}`;
+    return this.httpClient.get<any>(url, { headers: this.authHeader() });
+  }
+
+  // fetching all emails..
+  getAllEmails(): Observable<any[]> {
+    return this.getAllEmailIds().pipe(
+      mergeMap((ids) => ids.map(id => this.getEmailDetails(id))), // fetching details for each email..
+      mergeMap(obsArray => obsArray),  // flatten array of observables..
+      toArray()  // converted into a single array of emails..
+    );
+  }
+//===========================================================================================================================
 
   sendEmail(userId: string, rawEmail: string): Observable<any> {
 

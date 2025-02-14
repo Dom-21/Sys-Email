@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { MailTableComponent } from '../mail-table/mail-table.component';
-import { DashboardService } from '../../dashboard/dashboard.service';
 import { EmailDetails, FetchedMailService } from '../../shared/fetched-mail.service';
 
 @Component({
@@ -17,15 +16,17 @@ export class SpamComponent {
   component: string = 'spam';
 
   constructor(
-    private dashboardService: DashboardService,
     private fetchedMailService: FetchedMailService
   ) {}
 
   ngOnInit(): void {
-    this.dashboardService.emails$.subscribe((updatedEmails) => {
-      // console.log(updatedEmails);
+    this.fetchedMailService.loading.set(true);
+
+
+    setTimeout(() => {
       this.spamEmails = this.fetchedMailService.getSpamEmails();
-    });
+      this.fetchedMailService.loading.set(false);
+    }, 3000);
   }
 
 

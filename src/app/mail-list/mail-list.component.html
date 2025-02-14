@@ -1,6 +1,6 @@
 <div class="panel overflow-x-hidden">
     <div class="panel xl:flex p-3 xl:justify-between">
-        <div class="flex">
+        <div class="flex" #filterContainer>
             <button (click)="onFilterPersonal()"
                 class="m-2 p-2 lg:pr-10 border flex rounded-lg text-blue-400 border-blue-400 bg-transparent hover:bg-blue-400 hover:text-white">
                 <i class="p-2 pi pi-user"></i>
@@ -25,6 +25,16 @@
                 <label class="hidden lg:block p-1">Promotoions</label>
             </button>
         </div>
+        @if(filterMails && filter){
+            <div class="card sm:w-[70vw]  h-fit bg-white absolute z-30 top-20 transform md:-translate-x-[4%] max-md:-translate-x-[5%] rounded shadow-md">
+                <p-scrollpanel class="w-fit h-fit">
+                   <app-mail-table
+                   [messages]="filterMails"
+                   [component]="component"></app-mail-table>
+                </p-scrollpanel>
+            </div>
+        }
+
         <!-- <div class="flex lg:justify-center justify-start mx-4 xl:mt-5">
             <div>
                 <p class="p-1 text-gray-800 font-semibold" style="font-size: 14px;">

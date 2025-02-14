@@ -5,7 +5,7 @@ import { NavBarComponent } from "../nav-bar/nav-bar.component";
 import { RouterOutlet } from '@angular/router';
 import { GoogleApiService } from '../shared/google-api.service';
 import { lastValueFrom } from 'rxjs';
-import { DashboardService, Email } from './dashboard.service';
+import { FetchedMailService } from '../shared/fetched-mail.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,31 +18,17 @@ export class DashboardComponent {
   authService = inject(AuthService);
 
   constructor(
-    private dashBoardService: DashboardService,
-    private googleApi: GoogleApiService
+    
+    private googleApi: GoogleApiService,
+    private fetchedMailService: FetchedMailService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    if (this.googleApi.isLoggedIn()) {
-      await this.dashBoardService.fetchAndStoreEmails(); // Fetch emails immediately if logged in
-    }
+    // if (this.googleApi.isLoggedIn()) {
+    //   await this.dashBoardService.fetchAndStoreEmails(); // Fetch emails immediately if logged in
+    // }
+
+    // this.fetchedMailService.fetchEmails();
   }
 
-  async fetchAndStoreEmails(): Promise<void> {
-    if (!this.googleApi.isLoggedIn()) {
-      return;
-    }
-
-    try {
-      const userId = 'me';
-      const messages = await lastValueFrom(this.googleApi.emails(userId));
-
-      for (const element of messages.messages) {
-        const mail = await lastValueFrom(this.googleApi.getMail(userId, element.id));
-        this.dashBoardService.storeEmail(mail);
-      }
-    } catch (error) {
-      console.error("Error fetching emails:", error);
-    }
-  }
 }

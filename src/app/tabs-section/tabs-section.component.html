@@ -3,14 +3,14 @@
         <div>
             <ul class="md:w-min lg:w-full " style="font-size: 0.9rem; color: rgb(0, 0, 88);">
                 <li class="m-3 rounded-md">
-                        <button
-                            class=" md:w-min flex mt-1 mx-auto p-1 lg:w-full lg:bg-blue-700 rounded-md justify-center lg:mb-5 lg:hover:bg-indigo-800 "
-                            [routerLink]="['/dashboard/new-message']" routerLinkActive="router-link-active"
-                            [ngClass]="{'text-gray-100 bg-blue-700': isActive('/dashboard/new-message')}">
-                            <span class="lg:hidden"> <i class="p-2 pi pi-plus text-blue-700;"></i></span>
-                            
-                            <p class="hidden lg:block font-medium p-1 text-white">New Message</p>
-                        </button>
+                    <button
+                        class=" md:w-min flex mt-1 mx-auto p-1 lg:w-full lg:bg-blue-700 rounded-md justify-center lg:mb-5 lg:hover:bg-indigo-800 "
+                        [routerLink]="['/dashboard/new-message']" routerLinkActive="router-link-active"
+                        [ngClass]="{'text-gray-100 bg-blue-700': isActive('/dashboard/new-message')}">
+                        <span class="lg:hidden"> <i class="p-2 pi pi-plus text-blue-700;"></i></span>
+
+                        <p class="hidden lg:block font-medium p-1 text-white">New Message</p>
+                    </button>
                 </li>
                 <li class="m-3 rounded-md">
                     <div>
@@ -24,7 +24,8 @@
                                     <p class="hidden lg:block font-medium  p-1">Inbox</p>
                                 </div>
                                 <div>
-                                    <p class="hidden lg:block font-semibold p-1 mr-1 bg-slate-200 rounded">{{ inboxLength() }}</p>
+                                    <p class="hidden lg:block font-semibold p-1 mr-1 bg-slate-200 rounded">{{
+                                        inboxLength() }}</p>
                                 </div>
 
                             </button>
@@ -58,7 +59,7 @@
                                 <i class="pi pi-send p-2"></i>
                                 <p class="hidden lg:block font-medium  p-1">Sent</p>
                             </div>
-                            
+
 
                         </button>
                     </div>
@@ -73,7 +74,7 @@
                                 <i class="pi pi-exclamation-circle p-2"></i>
                                 <p class="hidden lg:block font-medium  p-1">Spam</p>
                             </div>
-                            
+
 
                         </button>
                     </div>
@@ -89,7 +90,8 @@
                                 <p class="hidden lg:block font-medium p-1">Drafts</p>
                             </div>
                             <div>
-                                <p class="hidden lg:block font-semibold p-1 mr-1 bg-slate-200 rounded">{{ draftsLength() }}</p>
+                                <p class="hidden lg:block font-semibold p-1 mr-1 bg-slate-200 rounded">{{ draftsLength()
+                                    }}</p>
                             </div>
 
                         </button>
@@ -113,6 +115,26 @@
                     <div>
                         <button
                             class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
+                            [routerLink]="['/dashboard/inbox/mails/important']" routerLinkActive="router-link-active"
+                            [ngClass]="{'bg-gray-200 text-blue-700 ' : isActive('/dashboard/inbox/mails/important')}">
+                            <div class="flex">
+                                <i class="pi pi-bookmark-fill p-2"></i>
+                                <p class="hidden lg:block font-medium p-1">Important</p>
+                            </div>
+
+                        </button>
+                        <button
+                            class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
+                            [routerLink]="['/dashboard/inbox/mails/archieve']" routerLinkActive="router-link-active"
+                            [ngClass]="{'bg-gray-200 text-blue-700 ' : isActive('/dashboard/inbox/mails/archieve')}">
+                            <div class="flex">
+                                <i class="pi pi-warehouse p-2"></i>
+                                <p class="hidden lg:block font-medium p-1">Archive</p>
+                            </div>
+
+                        </button>
+                        <!-- <button
+                            class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
                             (click)="toggleShowMore()">
                             <div class="flex">
                                 @if(!showMore){
@@ -127,39 +149,19 @@
                         <ul>
                             <li class="mt-2 rounded-md">
                                 <div>
-                                    <button
-                                        class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
-                                        [routerLink]="['/dashboard/inbox/mails/archieve']"
-                                        routerLinkActive="router-link-active"
-                                        [ngClass]="{'bg-gray-200 text-blue-700 ' : isActive('/dashboard/inbox/mails/archieve')}">
-                                        <div class="flex">
-                                            <i class="pi pi-warehouse p-2"></i>
-                                            <p class="hidden lg:block font-medium p-1">Archive</p>
-                                        </div>
 
-                                    </button>
                                 </div>
                             </li>
                             <li class="mt-2 rounded-md">
                                 <div>
-                                    <button
-                                        class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
-                                        [routerLink]="['/dashboard/inbox/mails/important']"
-                                        routerLinkActive="router-link-active"
-                                        [ngClass]="{'bg-gray-200 text-blue-700 ' : isActive('/dashboard/inbox/mails/important')}">
-                                        <div class="flex">
-                                            <i class="pi pi-bookmark-fill p-2"></i>
-                                            <p class="hidden lg:block font-medium p-1">Important</p>
-                                        </div>
-                                    
-                                    </button>
+
                                 </div>
                             </li>
                         </ul>
-                        }
+                        } -->
                     </div>
                 </li>
-                <hr class="mx-3 rounded-md border-t-1 border-gray-300">
+                <!-- <hr class="mx-3 rounded-md border-t-1 border-gray-300">
                 <li class="m-3 rounded-md">
                     <div>
                         <button
@@ -183,7 +185,7 @@
 
                         </button>
                     </div>
-                </li>
+                </li> -->
                 <hr class="mx-3 rounded-md border-t-2 border-gray-300">
             </ul>
 
@@ -192,8 +194,9 @@
 
 
     </div>
-    <div class="m-3 rounded-md">
-        <button class="md:w-min md:mx-0 lg:w-full flex mx-auto p-1  rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700">
+    <!-- <div class="m-3 rounded-md">
+        <button
+            class="md:w-min md:mx-0 lg:w-full flex mx-auto p-1  rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700">
             <div class="flex">
                 <i class="pi pi-user p-2 font-semibold flex"><i class="pi pi-plus font-extrabold"
                         style="font-size: 0.6rem;"></i></i>
@@ -203,5 +206,5 @@
             </div>
             <i class="hidden lg:block p-2 rounded-lg pi pi-plus hover:bg-gray-400  bg-gray-200"></i>
         </button>
-    </div>
+    </div> -->
 </div>

@@ -1,14 +1,16 @@
-import { Injectable, Signal, signal } from '@angular/core';
+import { inject, Injectable, Signal, signal } from '@angular/core';
 import { BehaviorSubject, catchError, forkJoin, map, Observable, of, single } from 'rxjs';
-import { DashboardService } from '../dashboard/dashboard.service';
 import { GoogleApiService } from './google-api.service';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Location } from '@angular/common';
 
 export interface EmailAttachment {
   filename: string;
   mimeType: string;
   size: number;
-  dataId?: string; // For referencing attachment data
+  dataId?: string; 
 }
 
 export interface EmailDetails {
@@ -38,26 +40,44 @@ export interface EmailDetails {
   providedIn: 'root',
 })
 export class FetchedMailService {
-  searchMessages(searchTerm: string) {
-    throw new Error('Method not implemented.');
-  }
-  reloadCurrentRoute() {
-    throw new Error('Method not implemented.');
-  }
+
+
+  loading = signal<boolean>(true);
+  emails:any ;
   inboxLength = signal<number>(0);
   draftsLength = signal<number>(0);
   currentMessage = signal<EmailDetails | null>(null);
   selectedMessages: EmailDetails[] = [];
-
+  extractedEmails!:EmailDetails[];
   private replySubject = new BehaviorSubject<EmailDetails | null>(null);
   private forwardSubject = new BehaviorSubject<EmailDetails | null>(null);
+  
 
   reply$ = this.replySubject.asObservable();
   forward$ = this.forwardSubject.asObservable();
 
-  constructor(private dashboardServices: DashboardService, private googleApiService: GoogleApiService,
-    private httpClient: HttpClient
+  constructor(private googleApiService: GoogleApiService,
+    private httpClient: HttpClient, private router: Router, private snackBar: MatSnackBar,
+    private location: Location
   ) { }
+
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    
+  }
+
+  goBack(){
+    this.location.back();
+  }
+
+  showMessage(message: string) {
+    this.snackBar.open(message, 'Close', {
+      duration: 2000, 
+      horizontalPosition: 'center', 
+      verticalPosition: 'top' 
+    });
+  }
 
   replyMail(msg: EmailDetails) {
     this.replySubject.next(msg);
@@ -65,6 +85,16 @@ export class FetchedMailService {
 
   forwardMail(msg: EmailDetails) {
     this.forwardSubject.next(msg);
+  }
+
+  fetchEmails() {
+    this.googleApiService.getAllEmails().subscribe(
+      (emails) => {
+        this.emails = emails;
+        console.log('All Emails:', this.emails);
+      },
+      (error) => console.error('Error fetching emails:', error)
+    );
   }
 
   private convertToEmailDetails(message: any): EmailDetails {
@@ -122,6 +152,53 @@ export class FetchedMailService {
       }));
   }
 
+  searchMessages(searchTerm: string): EmailDetails[] {
+    if (!searchTerm?.trim() || !this.extractedEmails?.length) return this.extractedEmails;
+    
+    const lowerCaseTerm = searchTerm.toLowerCase();    
+    
+    return this.extractedEmails.filter((email:EmailDetails) =>
+      email.to?.toLowerCase().includes(lowerCaseTerm) ||
+      email.cc?.toLowerCase().includes(lowerCaseTerm) ||
+      email.from?.toLowerCase().includes(lowerCaseTerm) ||
+      email.subject?.toLowerCase().includes(lowerCaseTerm) ||
+      email.body?.toLowerCase().includes(lowerCaseTerm) ||
+      email.date?.toLowerCase().includes(lowerCaseTerm) ||
+      email.attachments?.some(att => att.filename?.toLowerCase().includes(lowerCaseTerm))
+    );
+  }
+  
+  
+  
+  
+  
+  filterExtract(messages: any[]): EmailDetails[] {
+    if (!messages || messages.length === 0) return [];
+
+    const emailMap = new Map<string, EmailDetails>();
+
+    messages
+      .map((msg) => this.convertToEmailDetails(msg))
+      .forEach((email) => {
+        if (!emailMap.has(email.messageId)) {
+          // console.log(email);
+
+          emailMap.set(email.messageId, email);
+        }
+      });
+
+    this.inboxLength.set(emailMap.size);
+
+    return Array.from(emailMap.values());
+  }
+
+  reloadCurrentRoute() {
+    console.log('hello');
+    window.location.reload();
+
+    
+  }
+
   filterInboxEmails(messages: any[]): EmailDetails[] {
     if (!messages || messages.length === 0) return [];
 
@@ -139,12 +216,13 @@ export class FetchedMailService {
       });
 
     this.inboxLength.set(emailMap.size);
-
+    this.extractedEmails = this.filterExtract(this.emails);
     return Array.from(emailMap.values());
   }
 
-  getInboxEmails(messages: any[]): EmailDetails[] {
-    return this.filterInboxEmails(this.dashboardServices.getAllEmails());
+  getInboxEmails(): EmailDetails[] {
+    // this.fetchEmails();
+    return this.filterInboxEmails(this.emails);
   }
 
   filterMarkedEmails(messages: any[]): EmailDetails[] {
@@ -167,7 +245,7 @@ export class FetchedMailService {
   }
 
   getMarkedEmails(): EmailDetails[] {
-    return this.filterMarkedEmails(this.dashboardServices.getAllEmails());
+    return this.filterMarkedEmails(this.emails);
   }
 
   filterSentEmails(messages: any[]): EmailDetails[] {
@@ -190,7 +268,7 @@ export class FetchedMailService {
   }
 
   getSentEmails(): EmailDetails[] {
-    return this.filterSentEmails(this.dashboardServices.getAllEmails());
+    return this.filterSentEmails(this.emails);
   }
 
   filterImportantEmails(messages: any[]): EmailDetails[] {
@@ -213,7 +291,7 @@ export class FetchedMailService {
   }
 
   getImportantEmails(): EmailDetails[] {
-    return this.filterImportantEmails(this.dashboardServices.getAllEmails());
+    return this.filterImportantEmails(this.emails);
   }
 
   filterArchivedEmails(messages: any[]): EmailDetails[] {
@@ -239,7 +317,7 @@ export class FetchedMailService {
   }
 
   getArchivedEmails(): EmailDetails[] {
-    return this.filterArchivedEmails(this.dashboardServices.getAllEmails());
+    return this.filterArchivedEmails(this.emails);
   }
 
   filterDraftEmails(messages: any[]): EmailDetails[] {
@@ -260,7 +338,7 @@ export class FetchedMailService {
   }
 
   getDraftEmails(): EmailDetails[] {
-    return this.filterDraftEmails(this.dashboardServices.getAllEmails());
+    return this.filterDraftEmails(this.emails);
   }
 
   filterSpamEmails(messages: any[]): EmailDetails[] {
@@ -276,12 +354,14 @@ export class FetchedMailService {
           emailMap.set(email.messageId, email);
         }
       });
+      // console.log(emailMap);
+      
 
     return Array.from(emailMap.values());
   }
 
   getSpamEmails(): EmailDetails[] {
-    return this.filterSpamEmails(this.dashboardServices.getAllEmails());
+    return this.filterSpamEmails(this.emails);
   }
 
   filterTrashEmails(messages: any[]): EmailDetails[] {
@@ -302,10 +382,11 @@ export class FetchedMailService {
   }
 
   getTrashEmails(): EmailDetails[] {
-    return this.filterTrashEmails(this.dashboardServices.getAllEmails());
+    return this.filterTrashEmails(this.emails);
   }
 
   trashSelectedEmails(): Observable<any[]> {
+    
     const trashedMessageIds = this.selectedMessages.map((email) => email.id);
 
 
@@ -456,4 +537,6 @@ export class FetchedMailService {
       })
     );
   }
+
+
 }

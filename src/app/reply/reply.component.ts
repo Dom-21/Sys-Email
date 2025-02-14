@@ -68,7 +68,7 @@ export class ReplyComponent implements OnInit {
     this.Cc = '';
     this.title = '';
     this.text = '';
-    this.router.navigate(['/dashboard/new-message']);
+    this.fetchedMailService.goBack();
   }
 
   sanitizeHtml(content: string) {
@@ -120,7 +120,8 @@ export class ReplyComponent implements OnInit {
     this.googleApiService.sendReplyEmail(userId, rawMail, threadId).subscribe(
       (response) => {
         this.router.navigate(['/dashboard']);
-        alert('Reply sent successfully.')
+        // alert('Reply sent successfully.');
+        this.fetchedMailService.showMessage('Reply sent successfully.');
       },
       (error) => {
         console.error('error sending reply:', error);

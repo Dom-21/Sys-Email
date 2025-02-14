@@ -7,7 +7,7 @@ import {
   EmailDetails,
   FetchedMailService,
 } from '../../shared/fetched-mail.service';
-import { DashboardService } from '../../dashboard/dashboard.service';
+
 
 @Component({
   selector: 'app-all-mails',
@@ -21,21 +21,29 @@ export class AllMailsComponent implements OnInit {
   inboxEmails: any = [];
   component: string = 'inbox';
   subscription: Subscription = new Subscription();
+  
 
   //=====================Variables======================================
   emails: any[] = [];
   inbox: EmailDetails[] = [];
   fetchedMailService = inject(FetchedMailService);
-  dashboardService = inject(DashboardService);
 
 
+  constructor(){
+    // this.fetchedMailService.fetchEmails();
+  }
   ngOnInit(): void {
-    this.dashboardService.emails$.subscribe((updatedEmails) => {
-      // console.log(updatedEmails);
-      this.inbox = this.fetchedMailService.getInboxEmails(updatedEmails);
-    });
-
-    // this.fetchedMailService.inboxLength.set(this.paginatedMessages.length);
+    // this.dashboardService.emails$.subscribe((updatedEmails) => {
+    //   // console.log(updatedEmails);
+    //   this.fetchedMailService.getInboxEmails();
+    // });
+    this.fetchedMailService.loading.set(true);
+    
+    
+    setTimeout(() => {
+      this.inbox = this.fetchedMailService.getInboxEmails();
+      this.fetchedMailService.loading.set(false);
+    }, 2000);
   }
 
 }
