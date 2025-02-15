@@ -12,7 +12,7 @@ const getRedirectUri = () => {
 
 export const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
-  strictDiscoveryDocumentValidation: false,
+  strictDiscoveryDocumentValidation: true,
   redirectUri: 'https://sys-email.web.app', 
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
   scope:
