@@ -7,7 +7,7 @@ const getRedirectUri = () => {
   if (window.location.hostname === 'localhost') {
     return 'http://localhost:4200'; // Works for both localhost:4200 and localhost:4201
   }
-  return 'https://sys-email.web.app/'; // Production URL
+  return 'https://sys-email.web.app'; // Production URL
 };
 
 export const authCodeFlowConfig: AuthConfig = {
