@@ -52,32 +52,11 @@ export class TabSectionComponent implements OnInit {
 
 
     onClick(text: string){
+        // this.router.navigate(['/dashboard/inbox/mails/general']);
         this.fetchMailService.load.set(text.toLowerCase());
         this.fetchMailService.getMails(text.toLowerCase());
     }
 
-    // onClickMarked(){
-    //     this.fetchMailService.load.set('inbox');
-    //     this.fetchMailService.fetch();
-    //     console.log('marked');
-    //     this.fetchMailService.load.set('marked');
-    //     this.fetchMailService.fetch();
-    //     console.log('sent');
-    //     this.fetchMailService.load.set('sent');
-    //     this.fetchMailService.fetch();
-    //     console.log('draft');
-    //     this.fetchMailService.load.set('draft');
-    //     this.fetchMailService.fetch();
-    //     console.log('trash');
-    //     this.fetchMailService.load.set('trash');
-    //     this.fetchMailService.fetch();
-    //     console.log('arch');
-    //     this.fetchMailService.load.set('archieve');
-    //     this.fetchMailService.fetch();
-    //     console.log('imp');
-    //     this.fetchMailService.load.set('important');
-    //     this.fetchMailService.fetch();
-    // }
     
 
 }

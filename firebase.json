@@ -1,19 +1,16 @@
 {
   "hosting": {
-    "public": "/dist/my-angular-app/browser",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "headers": [
-      {
-        "source": "**/*.js",
-        "headers": [{ "key": "Content-Type", "value": "application/javascript" }]
-      },
-      {
-        "source": "**/*.css",
-        "headers": [{ "key": "Content-Type", "value": "text/css" }]
-      }
+    "public": "dist/my-angular-app/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
     ],
     "rewrites": [
-      { "source": "**", "destination": "/index.html" }
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   }
 }

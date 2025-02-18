@@ -10,8 +10,11 @@ import { Editor } from 'primeng/editor';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { GoogleApiService } from '../shared/google-api.service';
 import { TabSectionComponent } from '../tabs-section/tabs-section.component';
-import { CommonModule } from '@angular/common';
-import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
+import { CommonModule, Location } from '@angular/common';
+import {
+  EmailDetails,
+  FetchedMailService,
+} from '../shared/fetched-mail.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -41,9 +44,14 @@ export class NewMessageComponent implements OnInit {
   tabs = false;
   @ViewChild('tabsMenu') tabsMenu!: ElementRef;
 
-  constructor(private googleApiService: GoogleApiService, private router: Router,private fetchedMailService: FetchedMailService) { }
+  constructor(
+    private googleApiService: GoogleApiService,
+    private router: Router,
+    private fetchedMailService: FetchedMailService,
+    private location: Location
+  ) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   onToggleTabs() {
     this.tabs = !this.tabs;
@@ -69,6 +77,10 @@ export class NewMessageComponent implements OnInit {
   }
 
   async sendEmail() {
+    if(!this.to){
+      this.fetchedMailService.showMessage("Recipents address required!");
+      return;
+    }
     const userId = 'me';
     const rawMail = await this.buildRawEmail();
 
@@ -82,6 +94,7 @@ export class NewMessageComponent implements OnInit {
         this.router.navigate(['/dashboard']);
         // alert('Email sent successfully')
         this.fetchedMailService.showMessage('Email sent successfully');
+        this.location.back();
       },
       (error) => {
         console.error('Error sending email:', error);
@@ -152,6 +165,10 @@ ${fileData}
   }
 
   async save() {
+    if(!this.to){
+      this.fetchedMailService.showMessage("Recipents address required!");
+      return;
+    }
     const rawMail = await this.buildRawEmail();
 
     if (!rawMail) {
@@ -163,9 +180,9 @@ ${fileData}
       next: (response) => {
         // alert('Draft saved successfully');
         this.fetchedMailService.showMessage('Draft saved successfully');
-        this.router.navigate(['/dashboard/inbox']);
+        this.location.back();
       },
-      error: (err) => console.error('Error saving draft:', err)
+      error: (err) => console.error('Error saving draft:', err),
     });
   }
 }

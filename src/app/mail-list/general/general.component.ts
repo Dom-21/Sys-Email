@@ -14,16 +14,16 @@ export class GeneralComponent {
   currentMails = this.fetchedMailService.currentMails;
   component = 'inbox';
   constructor(){
+    
     this.fetchedMailService.getMails('inbox');
+    
   }
 
   ngOnInit(): void {
-    this.fetchedMailService.loading.set(true);
     
     
-    setTimeout(() => {
-      this.fetchedMailService.currentMails.set(this.fetchedMailService.getInboxEmails());
-      this.fetchedMailService.loading.set(false);
-    }, 3000);
+    // setTimeout(() => {
+    //   this.fetchedMailService.currentMails.set(this.fetchedMailService.getInboxEmails());
+    // }, 3000);
   }
 }

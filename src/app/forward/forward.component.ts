@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Editor } from 'primeng/editor';
 import { Router } from '@angular/router';
 import { TabSectionComponent } from '../tabs-section/tabs-section.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Observable } from 'rxjs';
 import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
 
@@ -26,7 +26,8 @@ export class ForwardComponent {
   constructor(
     private fetchedMailService: FetchedMailService,
     private googleApiService: GoogleApiService,
-    private router: Router
+    private router: Router,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -85,6 +86,7 @@ export class ForwardComponent {
         this.fetchedMailService.showMessage('Email forwarded successfully!');
         this.router.navigate(['dashboard']);
         // alert('Email forwarded successfully!');
+        this.location.back();
         
       },
       error: (err: { message: string }) =>{

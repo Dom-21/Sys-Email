@@ -105,18 +105,17 @@ export class FetchedMailService {
 
   async getMails(text:string) {
     try {
+      this.loading.set(true);
       const label= text!=='archieve'  ?  (text!=='starred' ? `in:${text}` : `is:starred`)  :  '-in:inbox -in:sent -in:draft -in:trash -in:spam';
       const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${label}`
       
       this.emails = await firstValueFrom(this.googleApiService.getAllEmails(url));
-      // console.log('All Emails:', this.emails);
-      // this.currentMails.set(this.toEmailsArray(this.emails));
+      
       this.currentMails.set(
         this.toEmailsArray(this.emails).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       );
-      console.log(this.toEmailsArray(this.emails).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-      console.log(this.currentMails());
-      
+     
+      this.loading.set(false);
       
       
     } catch (error) {

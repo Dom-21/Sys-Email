@@ -3,7 +3,7 @@
     <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
        @if(messages && messages.length>0){
         <table class="max-md:w-min md:w-full ">
-            @for(message of messages; track message.date){
+            @for(message of messages; track message.id){
             <tr class="hover:bg-green-100 hover:font-semibold" >
                 <td>
                     <div class="flex whitespace-nowrap">
@@ -28,8 +28,9 @@
                                 }
                         </div>
                         <div class="mx-2 my-2 p-1 rounded " 
-                        [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-medium': message.isUnread }">
-                        <button (click)="onMessageClick(message)">
+                        [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-medium': message.isUnread }"
+                        (click)="onMessageClick(message)">
+                        <button >
                             {{ extractName(message)}}
                         </button>
                             

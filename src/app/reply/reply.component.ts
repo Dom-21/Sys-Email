@@ -11,7 +11,7 @@ import { Editor } from 'primeng/editor';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TabSectionComponent } from '../tabs-section/tabs-section.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
 
 @Component({
@@ -32,7 +32,8 @@ export class ReplyComponent implements OnInit {
     private fetchedMailService: FetchedMailService,
     private googleApiService: GoogleApiService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private location: Location,
   ) { }
 
   ngOnInit(): void {
@@ -122,6 +123,7 @@ export class ReplyComponent implements OnInit {
         this.router.navigate(['/dashboard']);
         // alert('Reply sent successfully.');
         this.fetchedMailService.showMessage('Reply sent successfully.');
+        this.location.back();
       },
       (error) => {
         console.error('error sending reply:', error);

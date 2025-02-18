@@ -8,6 +8,7 @@ const authConfig: AuthConfig = {
   strictDiscoveryDocumentValidation: false, // Disable strict validation
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
   redirectUri: 'https://sys-email.web.app',
+  // redirectUri: 'http://localhost:4200',
   scope:
     'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
   showDebugInformation: true,

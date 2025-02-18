@@ -44,53 +44,9 @@ export class MailComponent implements OnInit {
         });
     } 
     } else {
-      console.log(this.component);
+      this.location.back();
     }
   }
-
-
-  showPreview: boolean = false;
-  selectedAttachment: EmailAttachment | null = null;
-
- 
-    isImage(attachment: EmailAttachment): boolean {
-      return attachment.mimeType.startsWith('image/');
-    }
-  
- 
-    isPdf(attachment: EmailAttachment): boolean {
-      return attachment.mimeType === 'application/pdf';
-    }
-  
-  
-    isVideo(attachment: EmailAttachment): boolean {
-      return attachment.mimeType.startsWith('video/');
-    }
-  
-  
-    isAudio(attachment: EmailAttachment): boolean {
-      return attachment.mimeType.startsWith('audio/');
-    }
-  
-  
-    getAttachmentUrl(attachment: EmailAttachment): string {
-     
-      return `assets/attachments/${attachment.filename}`; 
-    }
-  
- 
-    openPreview(attachment: EmailAttachment): void {
-      this.selectedAttachment = attachment;
-      this.showPreview = true;
-    }
-  
-    
-    closePreview(): void {
-      this.showPreview = false;
-
-      this.selectedAttachment = null;
-    }
-
 
   extractName(fullAddress: string): string {
     return fullAddress.includes('<') ? fullAddress.split('<')[0].trim() : fullAddress;
@@ -152,14 +108,15 @@ export class MailComponent implements OnInit {
   onClickReply() {
     if(this.message){
       this.fetchedMailService.replyMail(this.message);
-      this.goBack();
+      this.router.navigate(['/dashboard/reply']);
     }
   }
-
+  
   onClickForward() {
     if(this.message){
       this.fetchedMailService.forwardMail(this.message);
-      this.goBack();
+      this.router.navigate(['/dashboard/forward']);
+     
     }
   }
 
