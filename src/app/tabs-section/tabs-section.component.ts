@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { NavigationEnd, Router, RouterLink, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -15,62 +15,29 @@ import { FetchedMailService } from '../shared/fetched-mail.service';
 })
 export class TabSectionComponent implements OnInit {
     items!: MenuItem[];
+    
 
     private fetchMailService = inject(FetchedMailService);
     inboxLength = this.fetchMailService.inboxLength;
     draftsLength = this.fetchMailService.draftsLength;
     currentRoute: string = '';
+    tabs = [
+        { icon:'pi-inbox', text:'Inbox', link:'/dashboard/inbox'},
+        { icon:'pi-star-fill', text:'Starred', link:'/dashboard/inbox/mails/marked'},
+        { icon:'pi-send', text:'Sent', link:'/dashboard/inbox/mails/sent'},
+        { icon:'pi-exclamation-circle', text:'Spam', link:'/dashboard/inbox/mails/spam'},
+        { icon:'pi-file-o', text:'Draft', link:'/dashboard/inbox/mails/drafts'},
+        { icon:'pi-trash', text:'Trash', link:'/dashboard/inbox/mails/trash'},
+        { icon:'pi-bookmark-fill', text:'Important', link:'/dashboard/inbox/mails/important'},
+        { icon:'pi-warehouse', text:'Archieve', link:'/dashboard/inbox/mails/archieve'},
+    ]
 
     constructor(private router: Router) {
-        this.router.events.subscribe(event => {
-              if (event instanceof NavigationEnd) {
-                this.currentRoute = event.urlAfterRedirects; // Gets the current active route
-              }
-            });
+        
     }
 
     ngOnInit() {
-        this.items = [
-            {
-                label: 'Router',
-                icon: 'pi pi-palette',
-                items: [
-                    {
-                        label: 'Installation',
-                        icon: 'pi pi-eraser',
-                        route: '/installation'
-                    },
-                    {
-                        label: 'Configuration',
-                        icon: 'pi pi-heart',
-                        route: '/configuration'
-                    }
-                ]
-            },
-            {
-                label: 'Programmatic',
-                icon: 'pi pi-link',
-                command: () => {
-                    this.router.navigate(['/installation']);
-                }
-            },
-            {
-                label: 'External',
-                icon: 'pi pi-home',
-                items: [
-                    {
-                        label: 'Angular',
-                        icon: 'pi pi-star',
-                        url: 'https://angular.io/'
-                    },
-                    {
-                        label: 'Vite.js',
-                        icon: 'pi pi-bookmark',
-                        url: 'https://vitejs.dev/'
-                    }
-                ]
-            }
-        ];
+       
     }
 
     isActive(route: string): boolean {
@@ -83,9 +50,34 @@ export class TabSectionComponent implements OnInit {
         this.showMore = !this.showMore;
     }
 
-    onClickMarked(){
-           // Update the inboxMessages signal
+
+    onClick(text: string){
+        this.fetchMailService.load.set(text.toLowerCase());
+        this.fetchMailService.getMails(text.toLowerCase());
     }
+
+    // onClickMarked(){
+    //     this.fetchMailService.load.set('inbox');
+    //     this.fetchMailService.fetch();
+    //     console.log('marked');
+    //     this.fetchMailService.load.set('marked');
+    //     this.fetchMailService.fetch();
+    //     console.log('sent');
+    //     this.fetchMailService.load.set('sent');
+    //     this.fetchMailService.fetch();
+    //     console.log('draft');
+    //     this.fetchMailService.load.set('draft');
+    //     this.fetchMailService.fetch();
+    //     console.log('trash');
+    //     this.fetchMailService.load.set('trash');
+    //     this.fetchMailService.fetch();
+    //     console.log('arch');
+    //     this.fetchMailService.load.set('archieve');
+    //     this.fetchMailService.fetch();
+    //     console.log('imp');
+    //     this.fetchMailService.load.set('important');
+    //     this.fetchMailService.fetch();
+    // }
     
 
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Signal, signal } from '@angular/core';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -14,12 +14,13 @@ import { GoogleApiService } from '../../shared/google-api.service';
   styleUrl: './mail-table.component.css'
 })
 export class MailTableComponent {
-  @Input() messages: EmailDetails[]=[]; // Input for passing the messages
+  @Input() messages: EmailDetails[] =[] // Input for passing the messages
   @Input() component: string = '';
   @Output() toggleMarked = new EventEmitter<EmailDetails>(); // Output for marking
   @Output() toggleImportant = new EventEmitter<EmailDetails>(); // Output for marking important
   mailService: any;
   loading = signal<boolean>(false);
+  mails: EmailDetails[] = [];
 
  
   
@@ -32,6 +33,8 @@ export class MailTableComponent {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     this.loading = this.fetchedEmailService.loading;
+
+
   }
   onToggleMarked(message: EmailDetails): void {
     if (message.labels.includes('STARRED')) {
@@ -102,7 +105,7 @@ export class MailTableComponent {
 
   getBackgroundColor(message: EmailDetails) {
     const labels=message.labels;
-    var type = 'work';
+   
     var categoryLabels = labels.filter(label => label.startsWith("CATEGORY_"));
     switch(categoryLabels[0]) {
       case 'CATEGORY_WORK':

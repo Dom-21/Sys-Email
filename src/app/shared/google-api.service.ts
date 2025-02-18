@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { map, mergeMap, Observable, Subject, toArray } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 const getRedirectUri = () => {
   if (window.location.hostname === 'localhost') {
@@ -12,8 +13,8 @@ const getRedirectUri = () => {
 
 export const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
-  strictDiscoveryDocumentValidation: true,
-  redirectUri: 'https://sys-email.web.app', 
+  strictDiscoveryDocumentValidation: false,
+  redirectUri: 'http://localhost:4200',
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
   scope:
     'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
@@ -34,92 +35,83 @@ export interface UserInfo {
 })
 export class GoogleApiService {
   gmail = 'https://gmail.googleapis.com';
-  private API_URL = 'https://www.googleapis.com/gmail/v1/users/me/messages'
-
+  private API_URL = 'https://www.googleapis.com/gmail/v1/users/me/messages?q=in:inbox';
+  private gmailApiUrl = 'https://gmail.googleapis.com/gmail/v1/users/me/'
   userProfileSubject = new Subject<UserInfo>();
 
-  constructor(
-    private readonly oAuthService: OAuthService,
-    private readonly httpClient: HttpClient
-  ) {
-    // confiure oauth2 service
-    oAuthService.configure(authCodeFlowConfig);
-    // manually configure a logout url, because googles discovery document does not provide it
-    oAuthService.logoutUrl = 'https://www.google.com/accounts/Logout';
+  // constructor(
+  //   private readonly oAuthService: OAuthService,
+  //   private readonly httpClient: HttpClient
+  // ) {
+  //   // confiure oauth2 service
+  //   oAuthService.configure(authCodeFlowConfig);
+  //   // manually configure a logout url, because googles discovery document does not provide it
+  //   oAuthService.logoutUrl = 'https://www.google.com/accounts/Logout';
 
-    // loading the discovery document from google, which contains all relevant URL for
-    // the OAuth flow, e.g. login url
-    oAuthService.loadDiscoveryDocument().then(() => {
-      // // This method just tries to parse the token(s) within the url when
-      // // the auth-server redirects the user back to the web-app
-      // // It doesn't send the user the the login page
-      this.oAuthService.tryLoginImplicitFlow().then(() => {
-        if (!this.oAuthService.hasValidAccessToken()) {
-          this.oAuthService.initLoginFlow();
-        } else {
-          this.oAuthService.loadUserProfile().then((userProfile) => {
-            this.userProfileSubject.next(userProfile as UserInfo);
-          });
-        }
-        // when not logged in, redirecvt to google for login
-        // else load user profile
-      });
+  //   // loading the discovery document from google, which contains all relevant URL for
+  //   // the OAuth flow, e.g. login url
+  //   oAuthService.loadDiscoveryDocument().then(() => {
+  //     // // This method just tries to parse the token(s) within the url when
+  //     // // the auth-server redirects the user back to the web-app
+  //     // // It doesn't send the user the the login page
+  //     this.oAuthService.tryLoginImplicitFlow().then(() => {
+  //       if (!this.oAuthService.hasValidAccessToken()) {
+  //         this.oAuthService.initLoginFlow();
+  //       } else {
+  //         this.oAuthService.loadUserProfile().then((userProfile) => {
+  //           this.userProfileSubject.next(userProfile as UserInfo);
+  //         });
+  //       }
+  //       // when not logged in, redirecvt to google for login
+  //       // else load user profile
+  //     });
+  //   });
+  // }
+
+  constructor(private httpClient: HttpClient, private authService: AuthService) {}
+
+  // Helper function to get the authorization header
+  private authHeader(): HttpHeaders {
+    const token = this.authService.getAccessToken();
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
     });
   }
 
-  signIn() {
-    this.oAuthService.tryLoginImplicitFlow().then(() => {
-      if (!this.oAuthService.hasValidAccessToken()) {
-        this.oAuthService.initLoginFlow();
-      } else {
-        this.oAuthService.loadUserProfile().then((userProfile) => {
-          this.userProfileSubject.next(userProfile as UserInfo);
-        });
-      }
-      // when not logged in, redirecvt to google for login
-      // else load user profile
-    });
+  // Fetch user profile
+  getUserProfile(): Observable<any> {
+    return this.httpClient
+      .get(`${this.gmailApiUrl}profile`, { headers: this.authHeader() })
+      .pipe(map((profile) => profile));
   }
 
-  emails(userId: string): Observable<any> {
-    return this.httpClient.get(
-      `${this.gmail}/gmail/v1/users/${userId}/messages`,
-      { headers: this.authHeader() }
-    );
-  }
-
-  getMail(userId: string, mailId: string): Observable<any> {
-    return this.httpClient.get(
-      `${this.gmail}/gmail/v1/users/${userId}/messages/${mailId}`,
-      { headers: this.authHeader() }
-    );
-  }
+  
 
   getEmailId() {
-    const userInfo = this.oAuthService.getIdentityClaims();
+    const userInfo = this.authService.getIdentityClaims();
     const userEmail = userInfo?.['email'] || "dummymail@gmail.com";
     return userEmail;
   }
 
-  isLoggedIn(): boolean {
-    return this.oAuthService.hasValidAccessToken();
-  }
+  // isLoggedIn(): boolean {
+  //   return this.oAuthService.hasValidAccessToken();
+  // }
 
-  signOut() {
-    this.oAuthService.logOut();
-  }
+  // signOut() {
+  //   this.oAuthService.logOut();
+  // }
 
-  private authHeader(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.oAuthService.getAccessToken()}`,
+  // private authHeader(): HttpHeaders {
+  //   return new HttpHeaders({
+  //     Authorization: `Bearer ${this.oAuthService.getAccessToken()}`,
 
-    });
-  }
+  //   });
+  // }
 
-//========================================================================================================================
-  getAllEmailIds(): Observable<string[]> {
-    return this.httpClient.get<any>(this.API_URL, { headers: this.authHeader()}).pipe(
-      map(response => response.messages.map((msg: any) => msg.id)) 
+  //========================================================================================================================
+  getAllEmailIds(url:string): Observable<string[]> {
+    return this.httpClient.get<any>(url, { headers: this.authHeader() }).pipe(
+      map(response => response.messages.map((msg: any) => msg.id))
     );
   }
 
@@ -130,14 +122,14 @@ export class GoogleApiService {
   }
 
   // fetching all emails..
-  getAllEmails(): Observable<any[]> {
-    return this.getAllEmailIds().pipe(
+  getAllEmails(url: string): Observable<any[]> {
+    return this.getAllEmailIds(url).pipe(
       mergeMap((ids) => ids.map(id => this.getEmailDetails(id))), // fetching details for each email..
       mergeMap(obsArray => obsArray),  // flatten array of observables..
       toArray()  // converted into a single array of emails..
     );
   }
-//===========================================================================================================================
+  //===========================================================================================================================
 
   sendEmail(userId: string, rawEmail: string): Observable<any> {
 
@@ -259,7 +251,7 @@ export class GoogleApiService {
 
     return this.httpClient.post(
       url,
-      { removeLabelIds: ['INBOX'] },  
+      { removeLabelIds: ['INBOX'] },
       { headers: this.authHeader() }
     );
   }
@@ -270,41 +262,38 @@ export class GoogleApiService {
 
     return this.httpClient.post(
       url,
-      { addLabelIds: ['SPAM'] },  
+      { addLabelIds: ['SPAM'] },
       { headers: this.authHeader() }
     );
   }
 
-
-  
-  
   createDraft(userId: string, email: any): Observable<any> {
     const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts`;
     return this.httpClient.post(url, email, { headers: this.authHeader() });
   }
-  
+
   updateDraft(userId: string, draftId: string, email: any): Observable<any> {
     const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts/${draftId}`;
     return this.httpClient.put(url, email, { headers: this.authHeader() });
   }
-  
-  
-  
+
+
+
   getDraft(userId: string, draftId: string): Observable<any> {
     const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts/${draftId}`;
     return this.httpClient.get(url, { headers: this.authHeader() });
   }
-  
+
 
   sendDraft(userId: string, raw: string, messageId: string): Observable<any> {
     const url = `https://www.googleapis.com/gmail/v1/users/${userId}/messages/send`;
     const body = { raw, threadId: messageId };  // Use `messageId` as `threadId`
     return this.httpClient.post(url, body, { headers: this.authHeader() });
   }
-  
-  
-  
-  
+
+
+
+
 
 
 

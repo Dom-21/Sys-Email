@@ -96,22 +96,13 @@ export class MailComponent implements OnInit {
     return fullAddress.includes('<') ? fullAddress.split('<')[0].trim() : fullAddress;
   }
   
-  getEmailCategory(labels: string[]): string {
-    if (!labels || labels.length === 0) return 'Unknown';
-  
-    if (labels.includes('INBOX')) return 'inbox';
-    if (labels.includes('SENT')) return 'sent';
-    if (labels.includes('DRAFT')) return 'draft';
-  
-    return 'Other';
-  }
-  
   onToggleMarked(message: EmailDetails): void {
+    
     if (message.labels.includes('STARRED')) {
       
       this.googleApiService.unstarEmail('me', message.id).subscribe({
           next: () => {
-              console.log('Email marked');
+              // console.log('Email marked');
               message.isStarred = !message.isStarred;
               message.labels = message.labels.filter(label => label !== 'STARRED'); 
           },
@@ -122,7 +113,7 @@ export class MailComponent implements OnInit {
       this.googleApiService.starEmail('me', message.id).subscribe({
         next: () => {
               message.isStarred = !message.isStarred; 
-              console.log('Email unmarked');
+              // console.log('Email unmarked');
               message.labels.push('STARRED'); 
           },
           error: (err) => console.error('Error marking email as important', err)
@@ -161,19 +152,21 @@ export class MailComponent implements OnInit {
   onClickReply() {
     if(this.message){
       this.fetchedMailService.replyMail(this.message);
-      this.router.navigate(['/dashboard/reply']);
+      this.goBack();
     }
   }
 
   onClickForward() {
     if(this.message){
       this.fetchedMailService.forwardMail(this.message);
-      this.router.navigate(['/dashboard/forward']);
+      this.goBack();
     }
   }
 
   getBackgroundColor(message: EmailDetails) {
     const labels=message.labels;
+    
+    
     var type = 'work';
     var categoryLabels = labels.filter(label => label.startsWith("CATEGORY_"));
     switch(categoryLabels[0]) {

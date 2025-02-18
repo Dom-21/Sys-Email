@@ -6,7 +6,6 @@ import Aura from '@primeng/themes/aura';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authInterceptor, errorInterceptor } from './auth.interceptor';
 import { AuthConfig, DateTimeProvider, OAuthLogger, OAuthService, OAuthStorage, UrlHelperService,  } from 'angular-oauth2-oidc';
 
 const authConfig: AuthConfig = {
@@ -33,8 +32,7 @@ const customDateTimeProvider: DateTimeProvider = {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    
     provideRouter(routes),
     
     { provide: OAuthService, useClass: OAuthService },

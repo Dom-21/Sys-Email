@@ -3,12 +3,13 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { Router, RouterOutlet } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TabSectionComponent } from "../tabs-section/tabs-section.component";
 import { FetchedMailService } from '../shared/fetched-mail.service';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { MailTableComponent } from "../mail-list/mail-table/mail-table.component";
+import { GoogleApiService } from '../shared/google-api.service';
 
 @Component({
   selector: 'app-inbox',
@@ -17,7 +18,7 @@ import { MailTableComponent } from "../mail-list/mail-table/mail-table.component
   templateUrl: './inbox.component.html',
   styleUrl: './inbox.component.css',
 })
-export class InboxComponent implements OnInit, OnDestroy {
+export class InboxComponent implements OnInit {
   checked: any;
   popOverMenu = false;
   popOverType = false;
@@ -34,20 +35,21 @@ export class InboxComponent implements OnInit, OnDestroy {
   @ViewChild('popoverContainer') popoverContainer!: ElementRef;
   @ViewChild('popoverMenu') popoverMenu!: ElementRef;
   @ViewChild('tabsMenu') tabsMenu!: ElementRef;
-  emailSubscription!: Subscription;
+
   filteredEmails: any;
 
 
 
 
-  constructor(private eRef: ElementRef, private fetchedMailService: FetchedMailService, private router: Router) {
-    fetchedMailService.fetchEmails()
+  constructor(private fetchedMailService: FetchedMailService, private googleApiService: GoogleApiService) {
+  
   }
 
+  
 
   ngOnInit(): void {
     this.searchControl.valueChanges.subscribe(searchTerm => {
-      this.filteredEmails=this.fetchedMailService.searchMessages(searchTerm || '');
+      this.fetchedMailService.currentMails.set((this.fetchedMailService.searchMessages(searchTerm || '')));
     });
 
 
@@ -55,15 +57,6 @@ export class InboxComponent implements OnInit, OnDestroy {
   onClickReload() {
     this.fetchedMailService.reloadCurrentRoute();
   }
-
-
-  ngOnDestroy(): void {
-    if (this.emailSubscription) {
-      console.log(this.emailSubscription);
-      this.emailSubscription.unsubscribe();
-    }
-  }
-
 
   onToggleTabs() {
     this.tabs = !this.tabs;

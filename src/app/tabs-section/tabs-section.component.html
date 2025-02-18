@@ -6,13 +6,34 @@
                     <button
                         class=" md:w-min flex mt-1 mx-auto p-1 lg:w-full lg:bg-blue-700 rounded-md justify-center lg:mb-5 lg:hover:bg-indigo-800 "
                         [routerLink]="['/dashboard/new-message']" routerLinkActive="router-link-active"
-                        [ngClass]="{'text-gray-100 bg-blue-700': isActive('/dashboard/new-message')}">
+                        [ngClass]="{'text-gray-100 bg-blue-700': isActive('/dashboard/new-message')}"
+                        >
                         <span class="lg:hidden"> <i class="p-2 pi pi-plus text-blue-700;"></i></span>
 
                         <p class="hidden lg:block font-medium p-1 text-white">New Message</p>
                     </button>
                 </li>
-                <li class="m-3 rounded-md">
+                @for(tab of tabs; track tab){
+                    <li class="m-3 rounded-md">
+                        <div>
+                            <a>
+                                <!-- <button
+                                    class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
+                                    [routerLink]="[tab.link]" [routerLinkActive]="['router-link-active']"
+                                    [ngClass]="{'bg-gray-200 text-blue-700 ' : isActive(tab.link)}"> -->
+                                <button
+                                class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
+                                (click)="onClick(tab.text)">
+                                    <div class="flex">
+                                        <i class="pi p-2" [ngClass]="tab.icon"></i>
+                                        <p class="hidden lg:block font-medium  p-1">{{tab.text}}</p>
+                                    </div>
+                                </button>
+                            </a>
+                        </div>
+                    </li>
+                }
+                <!-- <li class="m-3 rounded-md">
                     <div>
                         <a>
                             <button
@@ -38,13 +59,12 @@
                             class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
                             [routerLink]="['/dashboard/inbox/mails/marked']" routerLinkActive="router-link-active"
                             [ngClass]="{'bg-gray-200 text-blue-700 ' : isActive('/dashboard/inbox/mails/marked')}">
+                        
                             <div class="flex">
                                 <i class="pi pi-star-fill p-2"></i>
                                 <p class="hidden lg:block font-medium  p-1">Marked</p>
                             </div>
-                            <div>
-                                <!-- <p class="font-semibold p-1 mr-1 bg-slate-200 rounded" > </p> -->
-                            </div>
+                           
 
                         </button>
                     </div>
@@ -133,7 +153,7 @@
                             </div>
 
                         </button>
-                        <!-- <button
+                        <button
                             class="md:w-min flex mx-auto p-1 lg:w-full rounded-md mt-1 justify-between hover:bg-slate-200 hover:text-blue-700"
                             (click)="toggleShowMore()">
                             <div class="flex">
@@ -158,10 +178,10 @@
                                 </div>
                             </li>
                         </ul>
-                        } -->
+                        }
                     </div>
                 </li>
-                <!-- <hr class="mx-3 rounded-md border-t-1 border-gray-300">
+                <hr class="mx-3 rounded-md border-t-1 border-gray-300">
                 <li class="m-3 rounded-md">
                     <div>
                         <button

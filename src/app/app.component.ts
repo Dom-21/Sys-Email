@@ -14,6 +14,7 @@ export class AppComponent implements OnDestroy{
   title = 'my-email-app';
 
   constructor(){
+    
   }
 
   ngOnDestroy(): void {

@@ -4,7 +4,7 @@ import { TabSectionComponent } from "../tabs-section/tabs-section.component";
 import { NavBarComponent } from "../nav-bar/nav-bar.component";
 import { RouterOutlet } from '@angular/router';
 import { GoogleApiService } from '../shared/google-api.service';
-import { lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { FetchedMailService } from '../shared/fetched-mail.service';
 
 @Component({
@@ -19,9 +19,11 @@ export class DashboardComponent {
 
   constructor(
     
-    private googleApi: GoogleApiService,
+    private googleApiService: GoogleApiService,
     private fetchedMailService: FetchedMailService
-  ) {}
+  ) {
+    this.fetch()
+  }
 
   async ngOnInit(): Promise<void> {
     // if (this.googleApi.isLoggedIn()) {
@@ -29,6 +31,18 @@ export class DashboardComponent {
     // }
 
     // this.fetchedMailService.fetchEmails();
+  }
+
+  async fetch(){
+    try {
+      const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=in:all`
+      const allmails =await firstValueFrom(this.googleApiService.getAllEmails(url));
+      
+      this.fetchedMailService.extractedEmails = this.fetchedMailService.toEmailsArray(allmails);
+  
+    } catch (error) {
+      console.error('Error fetching emails:', error);
+    }
   }
 
 }

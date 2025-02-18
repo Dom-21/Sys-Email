@@ -11,7 +11,7 @@ import { MailTableComponent } from "./mail-table/mail-table.component";
 @Component({
   selector: 'app-mail-list',
   standalone: true,
-  imports: [CheckboxModule, ButtonModule, RouterOutlet, ScrollPanelModule, MailTableComponent],
+  imports: [CheckboxModule, ButtonModule, RouterOutlet, ScrollPanelModule],
   templateUrl: './mail-list.component.html',
   styleUrl: './mail-list.component.css',
 })
@@ -32,37 +32,11 @@ export class MailListComponent {
     this.filter = false;
   }
 
-  onFilterPersonal() {
-    this.component='Personal';
-    this.filter = true;
-    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
-      email.labels.includes('CATEGORY_PERSONAL')
-    );
+  onFilter(label:string) {
+    this.fetchedMailService.currentMails.set(this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
+      email.labels.includes(label)
+    ));
   }
-
-  onFilterWork() {
-    this.filter = true;
-    this.component='Work';
-    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
-      email.labels.includes('CATEGORY_WORK')
-    );
-  }
-  onFilterSocial() {
-    this.filter = true;
-    this.component='Social';
-    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
-      email.labels.includes('CATEGORY_SOCIAL')
-    );
-  }
-  
-  onFilterPrivate() {
-    this.filter = true;
-    this.component='Promotions';
-    this.filterMails = this.fetchedMailService.extractedEmails.filter((email: EmailDetails) => 
-      email.labels.includes('CATEGORY_PROMOTIONS')
-    );
-  }
-
   @HostListener('document:click', ['$event'])
     onClickOutside(event: Event): void {
       if (

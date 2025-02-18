@@ -1,86 +1,102 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { GoogleApiService } from './shared/google-api.service';
+import { BehaviorSubject } from 'rxjs';
+
+const authConfig: AuthConfig = {
+  issuer: 'https://accounts.google.com',
+  strictDiscoveryDocumentValidation: false, // Disable strict validation
+  clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
+  redirectUri: 'http://localhost:4200',
+  scope:
+    'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+  showDebugInformation: true,
+};
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  private userProfileSubject = new BehaviorSubject<any>(null);
+  private isInitialLoad = true; // Flag to control the flow during initial load
 
-  private loginUrl = 'http://localhost:3000/login'; // Mock API
+  constructor(private oauthService: OAuthService, private router: Router) {
+    // Configure OAuth2
+    this.oauthService.configure(authConfig);
+    this.oauthService.logoutUrl = 'https://www.google.com/accounts/Logout';
 
-  constructor(private http: HttpClient, private router: Router, private googleApiService : GoogleApiService) {}
-
-  private user = '';
-  private password = '';
-
-  setUser(value: string): void {
-    this.user = value;
-  }
-
-  // Setter for password
-  setPassword(value: string): void {
-    this.password = value;
-  }
-
-  // Optional: Getter methods if you want to access these private properties
-  getUser(): string {
-    return this.user;
-  }
-
-  getPassword(): string {
-    return this.password;
-  }
-
-
-  private authenticated = false;
-
-  // Simulating authentication (for demo purposes)
-  authenticateUser() {
-    this.authenticated = true;
-  }
-
-
-  logoutUser() {
-    this.googleApiService.signOut();
-  }
-  
-
-
-  
-
-  login(credentials: { email: string; password: string }) {
-    if (credentials.email === 'olepenco@gmail.com' && credentials.password === 'Omkar@123') {
-     
-      const token = 'hello-omkar';  
-      localStorage.setItem('loginId', credentials.email);  
-      localStorage.setItem('token', token); 
-      this.authenticated = true;  
-      console.log('Logged in successfully!');
-      this.router.navigate(['/dashboard']);
-      
-    } else {
-      alert('Invalid credentials!');
-    }
-  }
-  
-  checkLoginStatus() {
-    if(this.googleApiService.isLoggedIn()){
-      this.googleApiService.signIn();
-      
-      alert("Auto-Login Succesful");
-    }
-    
-  }
-  onTestApi() {
-    this.http.get('http://localhost:3000/protectedData').subscribe(
-      (response) => {
-        console.log('Protected API Response:', response);
-      },
-      (error) => {
-        console.error('API Call Failed!', error);
+    // Load discovery document and handle login
+    this.oauthService.loadDiscoveryDocument().then(() => {
+      // Only try to login if it's the initial load and the URL contains tokens
+      if (this.oauthService.hasValidAccessToken()) {
+        // User already authenticated
+        this.loadUserProfile();
+      } else {
+        this.oauthService.tryLogin().then(() => {
+          if (this.oauthService.hasValidAccessToken()) {
+            // Login was successful
+            this.loadUserProfile();
+          } else {
+            // User is not authenticated, stay on the login page or redirect elsewhere
+            this.router.navigate(['/login']);
+          }
+        }).catch((error) => {
+          console.error('OAuth2 login failed', error);
+          this.router.navigate(['/login']);
+        });
       }
-    );
+    }).catch((error) => {
+      console.error('OAuth2 discovery document load failed', error);
+    });
+  }
+
+  private loadUserProfile() {
+    this.oauthService.loadUserProfile().then((profile) => {
+      this.userProfileSubject.next(profile);
+    }).catch((error) => {
+      console.error('Failed to load user profile', error);
+    });
+  }
+
+  // Sign in and initiate OAuth2 flow
+  signIn(): void {
+    // Prevent triggering login if the user is already authenticated
+    if (!this.oauthService.hasValidAccessToken()) {
+      const redirectUrl = this.router.url; // Save the current URL before login
+      this.oauthService.initLoginFlow();
+
+      // After login, navigate to the saved URL
+      this.oauthService.events.subscribe((event) => {
+        if (event.type === 'token_received') {
+          this.router.navigate([redirectUrl]);
+        }
+      });
+    }
+  }
+
+  // Sign out and redirect to login page
+  signOut(): void {
+    this.oauthService.logOut();
+    this.router.navigate(['/login']);
+  }
+
+  // Get the access token
+  getAccessToken(): string {
+    return this.oauthService.getAccessToken();
+  }
+
+  // Get user profile observable
+  getUserProfile() {
+    return this.userProfileSubject.asObservable();
+  }
+
+  // Get identity claims
+  getIdentityClaims() {
+    return this.oauthService.getIdentityClaims();
+  }
+
+  // Check if the user is authenticated
+  isAuthenticated(): boolean {
+    return this.oauthService.hasValidAccessToken();
   }
 }

@@ -102,7 +102,8 @@ export class NavBarComponent {
 
   onClickSignOut(){
     this.popOver = false;
-    this.authService.logoutUser();
+    this.authService.signOut();
+    this.router.navigate(['/login']);
   }
 
   @HostListener('document:click', ['$event'])

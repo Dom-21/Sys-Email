@@ -3,7 +3,7 @@
     <div class="max-h-[calc(100vh-100px)] overflow-y-auto">
        @if(messages && messages.length>0){
         <table class="max-md:w-min md:w-full ">
-            @for(message of messages; track message.messageId){
+            @for(message of messages; track message.date){
             <tr class="hover:bg-green-100 hover:font-semibold" >
                 <td>
                     <div class="flex whitespace-nowrap">
@@ -28,7 +28,7 @@
                                 }
                         </div>
                         <div class="mx-2 my-2 p-1 rounded " 
-                        [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-semibold': message.isUnread }">
+                        [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800 font-medium': message.isUnread }">
                         <button (click)="onMessageClick(message)">
                             {{ extractName(message)}}
                         </button>
@@ -38,14 +38,14 @@
                 </td>
                 <td (click)="onMessageClick(message)">
                     <div class="line-clamp-1 md:min-w-[300px] overflow-hidden  text-gray-700"
-                    [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800  font-semibold': message.isUnread }">
+                    [ngClass]="{ 'text-gray-600': !message.isUnread, 'text-gray-800  font-medium': message.isUnread }">
                        
                         <div [innerHTML]="message.body"></div>
                     </div>
                 </td>
                 <td>
                     <div class="flex items-center whitespace-nowrap">
-                        <div [ngClass]="getBackgroundColor(message)" class="h-2 w-2 rounded-full"></div>
+                        <div [ngClass]="message.color" class="h-2 w-2 rounded-full"></div>
                         <div *ngIf="message.attachments.length > 0" class="card flex justify-center mx-2 my-2 p-1 rounded hover:bg-gray-200  bg-gray-100">
                             <i class="pi pi-paperclip"></i>
                         </div>

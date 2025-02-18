@@ -1,28 +1,30 @@
+import { inject } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { Router } from '@angular/router';
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  // console.log('Intercepted Request:', req.url); // Log request to verify
-  const token = localStorage.getItem('token');
+export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
+  const oAuthservice = inject(OAuthService);
+  const router = inject(Router);
 
-  if (token) {
-    const clonedReq = req.clone({
-      setHeaders: {
-        AuthorizationToken: `Bearer Token '${token}'`
-      }
-    });
-    console.log('Token Added:', token);
-    return next(clonedReq);
+  if (!oAuthservice.hasValidAccessToken()) {
+    oAuthservice.initLoginFlow(); // Redirect to login if no token
+    return throwError(() => new Error('No valid access token'));
   }
 
-  return next(req);
-};
+  const clonedReq = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${oAuthservice.getAccessToken()}`
+    }
+  });
 
-
-export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  return next(req).pipe(
-    catchError(error => {
-      console.error('API Error:', error);
+  return next(clonedReq).pipe(
+    catchError((error) => {
+      if (error.status === 401) {
+        oAuthservice.initLoginFlow(); // If token expired, force login
+      }
       return throwError(() => error);
     })
   );
