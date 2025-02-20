@@ -7,7 +7,8 @@ const authConfig: AuthConfig = {
   issuer: 'https://accounts.google.com',
   strictDiscoveryDocumentValidation: false,
   clientId: '710593147792-uhlk00gu8443p423ais9v71ibjs2369j.apps.googleusercontent.com',
-  redirectUri: 'http://localhost:4200',
+  // redirectUri: 'http://localhost:4200',
+  redirectUri: 'https://sys-email.web.app',
   scope:
     'openid profile email https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
   showDebugInformation: true,
