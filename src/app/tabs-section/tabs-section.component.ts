@@ -52,9 +52,10 @@ export class TabSectionComponent implements OnInit {
 
 
     onClick(text: string){
-        // this.router.navigate(['/dashboard/inbox/mails/general']);
+        this.fetchMailService.loading.set(true);
         this.fetchMailService.load.set(text.toLowerCase());
         this.fetchMailService.getMails(text.toLowerCase());
+        this.router.navigate(['/dashboard/inbox/mails/general']);
     }
 
     

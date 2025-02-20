@@ -123,8 +123,6 @@ export class MailComponent implements OnInit {
   getBackgroundColor(message: EmailDetails) {
     const labels=message.labels;
     
-    
-    var type = 'work';
     var categoryLabels = labels.filter(label => label.startsWith("CATEGORY_"));
     switch(categoryLabels[0]) {
       case 'CATEGORY_WORK':

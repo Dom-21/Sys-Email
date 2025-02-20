@@ -10,7 +10,7 @@ export interface EmailAttachment {
   filename: string;
   mimeType: string;
   size: number;
-  dataId?: string; 
+  dataId?: string;
 }
 
 export interface EmailDetails {
@@ -22,6 +22,7 @@ export interface EmailDetails {
   id: string;
   messageId: string;
   threadId: string;
+  draftId:string;
   references: string;
   labels: string[];
   isImportant: boolean;
@@ -47,22 +48,25 @@ export class FetchedMailService {
 
   loading = signal<boolean>(true);
   load = signal<string>('inbox');
-  emails:any ;
+  component = signal<string>('');
+  emails: any;
   allmails: any;
+  draftId = signal<string>('');
   inboxLength = signal<number>(0);
   draftsLength = signal<number>(0);
   currentMessage = signal<EmailDetails | null>(null);
+
   selectedMessages: EmailDetails[] = [];
-  extractedEmails!:EmailDetails[];
+  extractedEmails!: EmailDetails[];
   private replySubject = new BehaviorSubject<EmailDetails | null>(null);
   private forwardSubject = new BehaviorSubject<EmailDetails | null>(null);
-  
+
 
   reply$ = this.replySubject.asObservable();
   forward$ = this.forwardSubject.asObservable();
-
+  /*
   urls = {
-    inbox:'https://www.googleapis.com/gmail/v1/users/me/messages?q=in:inbox',
+    inbox: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=in:inbox',
     sent: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=in:sent',
     starred: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=is:starred',
     spam: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=in:spam',
@@ -70,7 +74,7 @@ export class FetchedMailService {
     trash: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=in:trash',
     archieve: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=-in:inbox -in:sent -in:draft -in:trash -in:spam',
     important: 'https://www.googleapis.com/gmail/v1/users/me/messages?q=is:important',
-  }
+  }*/
 
   constructor(private googleApiService: GoogleApiService,
     private httpClient: HttpClient, private router: Router, private snackBar: MatSnackBar,
@@ -80,18 +84,18 @@ export class FetchedMailService {
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-    
+
   }
 
-  goBack(){
+  goBack() {
     this.location.back();
   }
 
   showMessage(message: string) {
     this.snackBar.open(message, 'Close', {
-      duration: 2000, 
-      horizontalPosition: 'center', 
-      verticalPosition: 'top' 
+      duration: 2000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top'
     });
   }
 
@@ -103,28 +107,44 @@ export class FetchedMailService {
     this.forwardSubject.next(msg);
   }
 
-  async getMails(text:string) {
+  async getMails(text: string) {
     try {
-      this.loading.set(true);
-      const label= text!=='archieve'  ?  (text!=='starred' ? `in:${text}` : `is:starred`)  :  '-in:inbox -in:sent -in:draft -in:trash -in:spam';
-      const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${label}`
       
-      this.emails = await firstValueFrom(this.googleApiService.getAllEmails(url));
+      this.component.set(text);
+      const label = text !== 'archieve' ? (text !== 'starred' ? `in:${text}` : `is:starred`) : '-in:inbox -in:sent -in:draft -in:trash -in:spam';
+      if (label === 'in:draft') {
+        this.googleApiService.getDrafts().subscribe(drafts => {
+          this.currentMails.set(
+            this.toEmailsArray(drafts).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          );
+          // console.log(this.currentMails());
+          
+        });
+        
+        
+        return;
+      } else {
+        const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=${label}`
+        
+        this.emails = await firstValueFrom(this.googleApiService.getAllEmails(url));
+        
+        
+        if(this.emails){
+          this.currentMails.set(
+            this.toEmailsArray(this.emails).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          );
+        }
+        // console.log(this.currentMails());
+      }
+
+
       
-      this.currentMails.set(
-        this.toEmailsArray(this.emails).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      );
-     
-      this.loading.set(false);
-      
-      
+
+
     } catch (error) {
       console.error('Error fetching emails:', error);
-      setInterval(()=>{
-        console.log("hello");
-        
-      }, 300000);
     }
+    this.loading.set(false);
   }
 
   private convertToEmailDetails(message: any): EmailDetails {
@@ -144,6 +164,7 @@ export class FetchedMailService {
       id: message.id,
       messageId: getHeader('Message-Id'),
       threadId: message.threadId,
+      draftId: message.draftId ? message.draftId:'none',
       references: getHeader('References'),
       labels: message.labelIds || [],
       isImportant: message.labelIds?.includes('IMPORTANT') || false,
@@ -166,16 +187,16 @@ export class FetchedMailService {
 
   getEmailCategory(labels: string[]): string {
     if (!labels || labels.length === 0) return 'Unknown';
-  
+
     if (labels.includes('INBOX')) return 'inbox';
     if (labels.includes('SENT')) return 'sent';
     if (labels.includes('DRAFT')) return 'draft';
     return 'Other';
   }
 
-  getBackgroundColor(labels:any) {
+  getBackgroundColor(labels: any) {
     var categoryLabels = labels.filter((label: string) => label.startsWith("CATEGORY_"));
-    switch(categoryLabels[0]) {
+    switch (categoryLabels[0]) {
       case 'CATEGORY_WORK':
         return 'bg-orange-400';
       case 'CATEGORY_PERSONAL':
@@ -187,7 +208,7 @@ export class FetchedMailService {
       default:
         return 'bg-gray-800';  // Default color
     }
-  } 
+  }
 
   private decodeBase64Body(encoded: string): string {
     try {
@@ -212,10 +233,10 @@ export class FetchedMailService {
   searchMessages(searchTerm: string): EmailDetails[] {
     // console.log(this.extractedEmails);
     if (!searchTerm?.trim() || !this.extractedEmails?.length) return this.extractedEmails;
-    
-    const lowerCaseTerm = searchTerm.toLowerCase();    
-    
-    return this.extractedEmails.filter((email:EmailDetails) =>
+
+    const lowerCaseTerm = searchTerm.toLowerCase();
+
+    return this.extractedEmails.filter((email: EmailDetails) =>
       email.to?.toLowerCase().includes(lowerCaseTerm) ||
       email.cc?.toLowerCase().includes(lowerCaseTerm) ||
       email.from?.toLowerCase().includes(lowerCaseTerm) ||
@@ -225,29 +246,29 @@ export class FetchedMailService {
       email.attachments?.some(att => att.filename?.toLowerCase().includes(lowerCaseTerm))
     );
   }
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   toEmailsArray(messages: any[]): EmailDetails[] {
     if (!messages || messages.length === 0) return [];
-    
+
     const emailMap = new Map<string, EmailDetails>();
-    
+
     messages
-    .map((msg) => this.convertToEmailDetails(msg))
-    .forEach((email) => {
-      if (!emailMap.has(email.messageId)) {
-        emailMap.set(email.messageId, email);
-      }
-    });
-    
+      .map((msg) => this.convertToEmailDetails(msg))
+      .forEach((email) => {
+        if (!emailMap.has(email.messageId)) {
+          emailMap.set(email.messageId, email);
+        }
+      });
+
     this.inboxLength.set(emailMap.size);
     return Array.from(emailMap.values());
   }
-  
+
   filterExtract(messages: any[]): EmailDetails[] {
     if (!messages || messages.length === 0) return [];
 
@@ -265,11 +286,11 @@ export class FetchedMailService {
   }
 
   reloadCurrentRoute() {
-    window.location.reload();
+    this.getMails(this.component());
   }
-  
+
   trashSelectedEmails(): Observable<any[]> {
-    
+
     const trashedMessageIds = this.selectedMessages.map((email) => email.id);
 
 
@@ -323,7 +344,7 @@ export class FetchedMailService {
               labels: email.labels.filter((l) => l !== 'UNREAD')
             };
           }
-          email.isUnread=false;
+          email.isUnread = false;
           return email;
         });
 
@@ -353,7 +374,7 @@ export class FetchedMailService {
               labels: [...email.labels, 'UNREAD']
             };
           }
-          email.isUnread=true;
+          email.isUnread = true;
           return email;
         });
 
@@ -421,265 +442,28 @@ export class FetchedMailService {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //==================================================================================================================================================
+  convertAttachmentsToFiles(messageId: string, attachments: EmailAttachment[]): Observable<File[]> {
     
-      filterInboxEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg))
-          .filter((email) => email.labels.includes('INBOX'))
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              emailMap.set(email.messageId, email);
-            }
-          });
-    
-        this.inboxLength.set(emailMap.size);
-        return Array.from(emailMap.values());
-      }
-    
-      getInboxEmails(): EmailDetails[] {
-        // this.fetchEmails();
-        return this.filterInboxEmails(this.emails);
-      }
-    
-      filterMarkedEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg))
-          .filter((email) => email.labels.includes('STARRED'))
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              // console.log(email);
-    
-              emailMap.set(email.messageId, email);
-            }
-          });
-    
-        return Array.from(emailMap.values());
-      }
-    
-      getMarkedEmails(): EmailDetails[] {
-        return this.filterMarkedEmails(this.emails);
-      }
-    
-      filterSentEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg))
-          .filter((email) => email.labels.includes('SENT'))
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              // console.log(email);
-    
-              emailMap.set(email.messageId, email);
-            }
-          });
-    
-        return Array.from(emailMap.values());
-      }
-    
-      getSentEmails(): EmailDetails[] {
-        return this.filterSentEmails(this.emails);
-      }
-    
-      filterImportantEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg))
-          .filter((email) => email.labels.includes('IMPORTANT'))
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              // console.log(email);
-    
-              emailMap.set(email.messageId, email);
-            }
-          });
-    
-        return Array.from(emailMap.values());
-      }
-    
-      getImportantEmails(): EmailDetails[] {
-        return this.filterImportantEmails(this.emails);
-      }
-    
-      filterArchivedEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg))
-          .filter(
-            (email) =>
-              !email.labels.includes('INBOX') &&
-              !email.labels.includes('TRASH') &&
-              !email.labels.includes('SPAM')
-          ) // emails that are not in INBOX, TRASH, or SPAM folder then there said to be archieve
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              emailMap.set(email.messageId, email);
-            }
-          });
-    
-        return Array.from(emailMap.values());
-      }
-    
-      getArchivedEmails(): EmailDetails[] {
-        return this.filterArchivedEmails(this.emails);
-      }
-    
-      filterDraftEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg)) // Convert each message
-          .filter((email) => email.labels.includes('DRAFT'))
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              emailMap.set(email.messageId, email);
-            }
-          });
-        this.draftsLength.set(emailMap.size);
-        return Array.from(emailMap.values());
-      }
-    
-      getDraftEmails(): EmailDetails[] {
-        return this.filterDraftEmails(this.emails);
-      }
-    
-      filterSpamEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg)) // Convert each message
-          .filter((email) => email.labels.includes('SPAM')) // Filter only spam emails
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              emailMap.set(email.messageId, email);
-            }
-          });
-          // console.log(emailMap);
-          
-    
-        return Array.from(emailMap.values());
-      }
-    
-      getSpamEmails(): EmailDetails[] {
-        return this.filterSpamEmails(this.emails);
-      }
-    
-      filterTrashEmails(messages: any[]): EmailDetails[] {
-        if (!messages || messages.length === 0) return [];
-    
-        const emailMap = new Map<string, EmailDetails>();
-    
-        messages
-          .map((msg) => this.convertToEmailDetails(msg)) // Convert each message
-          .filter((email) => email.labels.includes('TRASH')) // Filter only trash emails
-          .forEach((email) => {
-            if (!emailMap.has(email.messageId)) {
-              emailMap.set(email.messageId, email);
-            }
-          });
-    
-        return Array.from(emailMap.values());
-      }
-      
-      getTrashEmails(): EmailDetails[] {
-        return this.filterTrashEmails(this.emails);
-      }
-    
-    //=========================================================================================================================================================
+    const validAttachments = attachments.filter(att => att.dataId);
+  
+    const attachmentObservables: Observable<File>[] = validAttachments.map(att => {
+      return this.googleApiService.getAttachmentData(messageId, att.dataId!).pipe(
+        map(base64Data => {
+          const standardBase64 = base64Data.replace(/-/g, '+').replace(/_/g, '/');
+          const byteCharacters = atob(standardBase64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: att.mimeType });
+          return new File([blob], att.filename, { type: att.mimeType });
+        })
+      );
+    });
+  
+    return forkJoin(attachmentObservables);
+  }
+  
+  //=========================================================================================================================================================
 }

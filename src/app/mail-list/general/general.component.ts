@@ -12,10 +12,10 @@ import { MailTableComponent } from "../mail-table/mail-table.component";
 export class GeneralComponent {
   fetchedMailService = inject(FetchedMailService);
   currentMails = this.fetchedMailService.currentMails;
-  component = 'inbox';
+  component = this.fetchedMailService.component();
   constructor(){
     
-    this.fetchedMailService.getMails('inbox');
+    
     
   }
 

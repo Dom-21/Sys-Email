@@ -95,7 +95,7 @@ export class MailTableComponent {
     } else {
       this.fetchedEmailService.selectedMessages = this.fetchedEmailService.selectedMessages.filter((m: { messageId: string; }) => m.messageId !== message.messageId);
     }
-    console.log(this.fetchedEmailService.selectedMessages);
+    // console.log(this.fetchedEmailService.selectedMessages);
   }
 
   extractName(message: EmailDetails): string {
@@ -122,7 +122,7 @@ export class MailTableComponent {
   }
 
   onMessageClick(message: EmailDetails) {
-    if(this.component==='drafts'){
+    if(message.draftId!=='none'){
       // console.log("drafts");
       this.fetchedEmailService.currentMessage.set(message);
       this.router.navigate(['/dashboard/mail-draft']);

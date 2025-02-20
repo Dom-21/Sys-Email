@@ -42,7 +42,7 @@ export class InboxComponent implements OnInit {
 
 
   constructor(private fetchedMailService: FetchedMailService, private googleApiService: GoogleApiService) {
-  
+    
   }
 
   

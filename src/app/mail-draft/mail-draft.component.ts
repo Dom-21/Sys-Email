@@ -7,6 +7,7 @@ import { TabSectionComponent } from '../tabs-section/tabs-section.component';
 
 import { GoogleApiService } from '../shared/google-api.service';
 import { EmailDetails, FetchedMailService } from '../shared/fetched-mail.service';
+import { Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-mail-draft',
@@ -27,27 +28,38 @@ export class MailDraftComponent {
     text: string = '';
     formGroup: FormGroup<any> | undefined;
     on_label: any;
-    message!: any;
-    selectedFiles: File[] = [];
+    message:any;
+    selectedFiles:File[] = [];
   
     tabs = false;
     @ViewChild('tabsMenu') tabsMenu!: ElementRef;
   
-    constructor(private googleApiService: GoogleApiService, private fetchedMailService: FetchedMailService) { 
+    constructor(private googleApiService: GoogleApiService, private fetchedMailService: FetchedMailService, private router: Router) { 
       
     }
   
-    ngOnInit(): void { 
+    async ngOnInit(): Promise<void> { 
       this.message = this.fetchedMailService.currentMessage();
       if(this.message){
         this.to = this.message.to;
-        this.Cc = this.message.Cc;
+        this.Cc = this.message.cc;
         this.title = this.message.subject;
         this.text = this.message.body;
+        await this.fetchedMailService.convertAttachmentsToFiles(this.message.messageId, this.message.attachments).subscribe(
+          (files: File[]) => {
+            this.selectedFiles.push(...files);
+            // console.log('Converted Files:', this.selectedFiles);
+          },
+          error => {
+            console.error('Error converting attachments to Files:', error);
+          }
+        );
         
+        
+      }else{
+        this.router.navigate(['/dashboard']);
       }
-      console.log('Draft Loaded:', this.message);
-      console.log('To Field:', this.to);
+      // console.log('Draft Loaded:', this.message);
 
     }
   
@@ -63,8 +75,10 @@ export class MailDraftComponent {
     }
   
     handleFileInput(event: any) {
-      this.selectedFiles = Array.from(event.target.files);
+      const arr = Array.from(event.target.files) as File[];
+      this.selectedFiles.push(...arr);
     }
+    
   
     reset() {
       this.to = '';
@@ -74,249 +88,131 @@ export class MailDraftComponent {
       this.selectedFiles = [];
     }
   
-    async sendEmail() {
-      const userId = 'me';
-      const rawMail = await this.buildRawEmail();
-  
-      if (!rawMail) {
-        console.error('Failed to build raw email. Check input fields.');
-        return;
+    async buildRawEmail(): Promise<string | null> {
+     
+      if (!this.to.trim()) {
+        this.fetchedMailService.showMessage("Error: Recipient address is missing!");
+        return null;
       }
-  
-      this.googleApiService.sendEmail(userId, rawMail).subscribe(
-        (response) => alert('Email sent successfully:' + response),
-        (error) => {
-          console.error('Error sending email:', error);
-          console.error('Raw Email Content:', rawMail);
+    
+      
+      const boundary = "boundary_" + new Date().getTime();
+      let emailParts: string[] = [];
+    
+     
+      emailParts.push(`To: ${this.to}`);
+      if (this.Cc && this.Cc.trim() !== '') {
+        emailParts.push(`Cc: ${this.Cc}`);
+      }
+      emailParts.push(`Subject: ${this.title}`);
+      emailParts.push(`MIME-Version: 1.0`);
+      emailParts.push(`Content-Type: multipart/mixed; boundary="${boundary}"`);
+      emailParts.push(""); 
+    
+    
+      emailParts.push(`--${boundary}`);
+      emailParts.push(`Content-Type: text/plain; charset="UTF-8"`);
+      emailParts.push(`Content-Transfer-Encoding: 7bit`);
+      emailParts.push("");
+      emailParts.push(`${this.text}`);
+      emailParts.push(""); 
+    
+      
+      if (this.selectedFiles && this.selectedFiles.length > 0) {
+        for (const file of this.selectedFiles) {
+          
+          const fileBase64 = await this.readFileAsBase64(file);
+    
+          
+          emailParts.push(`--${boundary}`);
+          emailParts.push(`Content-Type: ${file.type}; name="${file.name}"`);
+          emailParts.push(`Content-Disposition: attachment; filename="${file.name}"`);
+          emailParts.push(`Content-Transfer-Encoding: base64`);
+          emailParts.push("");
+          emailParts.push(fileBase64);
+          emailParts.push("");
         }
-      );
-    }
-  
-    async buildRawEmail(): Promise<string> {
-      if (!this.to?.trim()) {
-        console.error('Recipient address is missing!');
-        return '';
       }
+    
+      
+      emailParts.push(`--${boundary}--`);
+    
   
-      let boundary = `boundary_${Date.now()}`;
-      const senderEmail = await this.googleApiService.getEmailId();
-  
-      let emailContent = `From: ${senderEmail}
-  To: ${this.to}
-  Cc: ${this.Cc ? this.Cc : ''}
-  Subject: ${this.title}
-  MIME-Version: 1.0
-  Content-Type: multipart/mixed; boundary="${boundary}"
-  
-  --${boundary}
-  Content-Type: text/html; charset="UTF-8"
-  
-  ${this.text}
-  
-  `;
-  
-      for (let file of this.selectedFiles) {
-        const fileData = await this.fileToBase64(file);
-        emailContent += `
-  --${boundary}
-  Content-Type: ${file.type}; name="${file.name}"
-  Content-Disposition: attachment; filename="${file.name}"
-  Content-Transfer-Encoding: base64
-  
-  ${fileData}
-  
-  `;
-      }
-  
-      emailContent += `--${boundary}--`;
-  
-      // Use URL-safe Base64 encoding
-      return this.encodeBase64(emailContent);
-    }
-  
-    fileToBase64(file: File): Promise<string> {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          let base64String = (reader.result as string).split(',')[1];
-          resolve(base64String);
-        };
-        reader.onerror = (error) => reject(error);
-      });
-    }
-  
-    private encodeBase64(input: string): string {
-      return btoa(unescape(encodeURIComponent(input)))
+      const email = emailParts.join("\r\n");
+      // console.log("Raw Email Before Encoding:\n", email);
+    
+     
+      const encodedEmail = btoa(email)
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=+$/, '');
+      return encodedEmail;
     }
-  
-    async save() {
-      const rawMail = await this.buildRawEmail();
-  
-      if (!rawMail) {
-        console.error('Failed to build raw email. Check input fields.');
-        return;
-      }
-  
-      this.googleApiService.saveDraft('me', rawMail).subscribe({
-        next: (response) => console.log('Draft saved successfully:', response),
-        error: (err) => console.error('Error saving draft:', err)
+    
+    
+    readFileAsBase64(file: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          
+          const result = reader.result as string;
+          
+          const base64Index = result.indexOf('base64,') + 'base64,'.length;
+          resolve(result.substring(base64Index));
+        };
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
       });
     }
+    
     
   
     async saveDraft() {
       const userId = 'me';
       const rawMail = await this.buildRawEmail();
+      const draftId = this.message.draftId;
     
       if (!rawMail) {
         console.error('Failed to build raw email. Check input fields.');
         return;
       }
     
-      const draftId = this.message?.id; 
-      const requestBody = {
-        message: {
-          raw: rawMail,
+      this.googleApiService.updateDraft(userId, draftId, rawMail).subscribe(
+        (updateResponse) => {
+          this.fetchedMailService.showMessage("Draft updated successfully.")
+          this.router.navigate(['/dashboard']);
         },
-      };
-    
-      // If draft exists, update it; otherwise, create a new one
-      let saveDraftRequest;
-      if (draftId) {
-        saveDraftRequest = this.googleApiService.updateDraft(userId, draftId, requestBody);
-      } else {
-        saveDraftRequest = this.googleApiService.createDraft(userId, requestBody);
-      }
-    
-      saveDraftRequest.subscribe({
-        next: (response: any) => {
-          console.log('Draft saved successfully:', response);
-          this.message.id = response.id; // Store draft ID for future updates
-        },
-        error: (err: any) => console.error('Error saving draft:', err),
-      });
+        (error) => console.error('Error updating draft:', error)
+      );
     }
-
-    async sendDraft() {
-      console.log('Fetching Draft ID:', this.message?.id);
+   
     
-      if (!this.message?.id) {
-        console.error('Draft ID is missing. Save the draft first.');
-        alert('Draft ID is missing. Save the draft before sending.');
+    async sendDraft(draftId: string) {
+      const userId = 'me';
+      const rawMail = await this.buildRawEmail();
+    
+      if (!rawMail) {
+        console.error('Failed to build raw email. Check input fields.');
         return;
       }
     
-      // Step 1: Get the draft details using draft ID
-      this.googleApiService.getDraft('me', this.message.messageId).subscribe({
-        next: async (draftResponse: any) => {
-          console.log('Fetched Draft:', draftResponse);
+      
+      this.googleApiService.updateDraft(userId, draftId, rawMail).subscribe(
+        (updateResponse) => {
+          // console.log('Draft updated successfully:', updateResponse);
     
-          if (!draftResponse?.message?.id) {
-            console.error('Message ID not found in the draft.');
-            alert('Message ID not found in the draft.');
-            return;
-          }
-    
-          const messageId = draftResponse.message.id;
-          console.log('Extracted Message ID:', messageId);
-    
-          // Step 2: Build the raw email
-          const rawMail = await this.buildRawEmail();
-          if (!rawMail) {
-            console.error('Failed to build raw email.');
-            return;
-          }
-    
-          const encodedRawMail = this.encodeBase64(rawMail);
-          console.log('Encoded Raw Email:', encodedRawMail);
-    
-          // Step 3: Send the email using the extracted message ID
-          this.googleApiService.sendDraft('me', encodedRawMail, messageId).subscribe({
-            next: (response) => console.log('Draft sent successfully:', response),
-            error: (error) => console.error('Error sending draft:', error),
-          });
+         
+          this.googleApiService.sendDraft(userId, updateResponse.id).subscribe(
+            (sendResponse: any) => {
+              this.fetchedMailService.showMessage("Draft sent successfully.");
+              this.router.navigate(['/dashboard']);
+            },
+            (error: any) => console.error('Error sending draft:', error)
+          );
         },
-        error: (error: any) => {
-          console.error('Error fetching draft:', error);
-          alert('Error fetching draft. It might have been deleted.');
-        },
-      });
-    }
-    
-    
-    
-    isDraftEdited(): boolean {
-      if (!this.message) return false;
-    
-      return (
-        this.to !== this.message.to ||
-        this.Cc !== this.message.cc ||
-        this.title !== this.message.subject ||
-        this.text !== this.message.body ||
-        this.areAttachmentsChanged()
+        (error) => console.error('Error updating draft:', error)
       );
     }
     
-    areAttachmentsChanged(): boolean {
-      if (this.selectedFiles.length !== this.message.attachments.length) return true;
-    
-      const currentAttachmentNames = this.message.attachments.map((att: { filename: any; }) => att.filename);
-      const selectedFileNames = this.selectedFiles.map((file) => file.name);
-    
-      return (
-        selectedFileNames.some((name) => !currentAttachmentNames.includes(name)) ||
-        currentAttachmentNames.some((name: string) => !selectedFileNames.includes(name))
-      );
-    }
-    
-    async sendingDraft() {
-      console.log('Fetching Draft ID:', this.message?.id);
-    
-      if (!this.message?.id) {
-        console.error('Draft ID is missing. Save the draft first.');
-        alert('Draft ID is missing. Save the draft before sending.');
-        return;
-      }
-    
-      // Step 1: Get the draft details using draft ID
-      this.googleApiService.getDraft('me', this.message.id).subscribe({
-        next: async (draftResponse: any) => {
-          console.log('Fetched Draft:', draftResponse);
-    
-          if (!draftResponse?.message?.id) {
-            console.error('Message ID not found in the draft.');
-            alert('Message ID not found in the draft.');
-            return;
-          }
-    
-          const messageId = draftResponse.message.id;
-          console.log('Extracted Message ID:', messageId);
-    
-          // Step 2: Build the raw email
-          const rawMail = await this.buildRawEmail();
-          if (!rawMail) {
-            console.error('Failed to build raw email.');
-            return;
-          }
-    
-          const encodedRawMail = this.encodeBase64(rawMail);
-          console.log('Encoded Raw Email:', encodedRawMail);
-    
-          // Step 3: Send the email using the extracted message ID
-          this.googleApiService.sendDraft('me', encodedRawMail, this.message.threadId).subscribe({
-            next: (response) => console.log('Draft sent successfully:', response),
-            error: (error) => console.error('Error sending draft:', error),
-          });
-        },
-        error: (error) => {
-          console.error('Error fetching draft:', error);
-          alert('Error fetching draft. It might have been deleted.');
-        },
-      });
-    }
     
   }

@@ -48,28 +48,28 @@
             </div>
         </div>
         <div class="w-full mt-3">
-            <input type="file" (change)="handleFileInput($event)" multiple 
+            <input name="file" type="file" (change)="handleFileInput($event)" [(ngModel)]="selectedFiles" multiple 
                 class="form-input p-0 file:border-0 rounded file:bg-blue-700/90 file:px-4 file:py-2 file:font-semibold file:text-white file:hover:bg-blue-900 ltr:file:mr-5 rtl:file:ml-5" />
         </div>
 
-        <div class="flex justify-end">
+        <div class="sm:flex justify-end">
             <div class="flex mx-1">
 
-                <button type="button" class="mt-4 mx-1 bg-red-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+                <button type="button" class="mt-4 mx-1 bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600"
                     (click)="reset()">
                     Cancel
                 </button>
                 
     
                 <button type="button" class="mt-4 mx-1 bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600"
-                    (click)="save()">
-                    Save
+                    (click)="saveDraft()">
+                    Save Draft
                 </button>
 
                 
-                <button type="submit" class="mt-4 mx-1 bg-green-500 text-white py-2 px-6 rounded hover:bg-blue-600"
-                    (click)="sendEmail()">
-                    Send
+                <button type="submit" class="mt-4 mx-1 bg-green-500 text-white py-2 px-6 rounded hover:bg-green-600"
+                    (click)="sendDraft(message.draftId)">
+                    Send Draft
                 </button>
     
                 

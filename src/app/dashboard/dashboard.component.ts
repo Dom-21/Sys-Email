@@ -18,11 +18,8 @@ export class DashboardComponent {
   authService = inject(AuthService);
 
   constructor(
-    
-    private googleApiService: GoogleApiService,
-    private fetchedMailService: FetchedMailService
   ) {
-    this.fetch()
+    
   }
 
   async ngOnInit(): Promise<void> {
@@ -33,16 +30,6 @@ export class DashboardComponent {
     // this.fetchedMailService.fetchEmails();
   }
 
-  async fetch(){
-    try {
-      const url = `https://www.googleapis.com/gmail/v1/users/me/messages?q=in:all`
-      const allmails =await firstValueFrom(this.googleApiService.getAllEmails(url));
-      
-      this.fetchedMailService.extractedEmails = this.fetchedMailService.toEmailsArray(allmails);
   
-    } catch (error) {
-      console.error('Error fetching emails:', error);
-    }
-  }
 
 }

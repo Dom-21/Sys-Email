@@ -1,4 +1,4 @@
-<div class=" bg-slate-50 rounded min-h-[calc(100vh-100px)] border-1 border-zinc-200 shadow-lg overflow-hidden mt-2">
+<div class=" bg-slate-50 rounded h-[calc(100vh-100px)] border-1 border-zinc-200 shadow-lg overflow-hidden mt-2">
     <div class="card flex md:justify-between border-b-2 border-slate-200">
 
         <div class="card flex">
@@ -38,7 +38,7 @@
 
                     <!-- Popover -->
                     @if(popOverType){
-                    <div class="absolute z-10 shadow bg-slate-50 rounded -left-16 top-8">
+                    <div class="absolute z-10 shadow bg-slate-50 rounded -left-24 top-8">
                         <ul style="font-size: medium;">
                             <li>
                                 <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700">
@@ -79,13 +79,12 @@
                 </div>
 
             </div>
-            <div class="py-3.5 px-2 relative inline-block">
+            <div class="py-3.5 px-2 relative inline-block" #popoverMenu>
                 <button (click)="toggleMenu()">
-                    <i class=" p-1 rounded pi pi-ellipsis-v hover:bg-gray-200  "></i>
+                    <i class=" p-1 rounded pi pi-ellipsis-v hover:bg-gray-200"></i>
                 </button>
                 @if(popOverMenu){
-                <div class="w-[150px] absolute z-10 m-1 -left-32 shadow top-10 bg-slate-50 rounded" #popoverMenu>
-                    
+                <div class="w-[150px] absolute z-10 m-1 -left-32 shadow top-10 bg-slate-50 rounded" >
                         <ul style="font-size: small;">
                             <li>
                                 <button class="p-1 w-full flex hover:bg-slate-200 hover:text-blue-700"

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { map, mergeMap, Observable, Subject, toArray } from 'rxjs';
+import { from, map, mergeMap, Observable, Subject, toArray } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 const getRedirectUri = () => {
@@ -68,7 +68,7 @@ export class GoogleApiService {
   //   });
   // }
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) {}
+  constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
   // Helper function to get the authorization header
   private authHeader(): HttpHeaders {
@@ -85,7 +85,7 @@ export class GoogleApiService {
       .pipe(map((profile) => profile));
   }
 
-  
+
 
   getEmailId() {
     const userInfo = this.authService.getIdentityClaims();
@@ -93,25 +93,10 @@ export class GoogleApiService {
     return userEmail;
   }
 
-  // isLoggedIn(): boolean {
-  //   return this.oAuthService.hasValidAccessToken();
-  // }
-
-  // signOut() {
-  //   this.oAuthService.logOut();
-  // }
-
-  // private authHeader(): HttpHeaders {
-  //   return new HttpHeaders({
-  //     Authorization: `Bearer ${this.oAuthService.getAccessToken()}`,
-
-  //   });
-  // }
-
   //========================================================================================================================
-  getAllEmailIds(url:string): Observable<string[]> {
+  getAllEmailIds(url: string): Observable<string[]> {
     return this.httpClient.get<any>(url, { headers: this.authHeader() }).pipe(
-      map(response => response.messages.map((msg: any) => msg.id))
+      map(response => response.messages?.map((msg: any) => msg.id))
     );
   }
 
@@ -122,13 +107,25 @@ export class GoogleApiService {
   }
 
   // fetching all emails..
+  // getAllEmails(url: string): Observable<any[]> {
+  //   return this.getAllEmailIds(url).pipe(
+  //     mergeMap((ids) => ids?.map(id => this.getEmailDetails(id))), 
+  //     mergeMap(obsArray => obsArray),  
+  //     toArray()  
+  //   );
+  // }
   getAllEmails(url: string): Observable<any[]> {
     return this.getAllEmailIds(url).pipe(
-      mergeMap((ids) => ids.map(id => this.getEmailDetails(id))), // fetching details for each email..
-      mergeMap(obsArray => obsArray),  // flatten array of observables..
-      toArray()  // converted into a single array of emails..
+      mergeMap((ids) => {
+        // Ensure that ids is an array; if not, return an empty array
+        const emailIds: any[] = Array.isArray(ids) ? ids : [];
+        return from(emailIds);
+      }),
+      mergeMap(id => this.getEmailDetails(id)),
+      toArray()
     );
   }
+  
   //===========================================================================================================================
 
   sendEmail(userId: string, rawEmail: string): Observable<any> {
@@ -272,29 +269,101 @@ export class GoogleApiService {
     return this.httpClient.post(url, email, { headers: this.authHeader() });
   }
 
-  updateDraft(userId: string, draftId: string, email: any): Observable<any> {
-    const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts/${draftId}`;
-    return this.httpClient.put(url, email, { headers: this.authHeader() });
-  }
-
-
-
   getDraft(userId: string, draftId: string): Observable<any> {
     const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts/${draftId}`;
     return this.httpClient.get(url, { headers: this.authHeader() });
   }
 
 
-  sendDraft(userId: string, raw: string, messageId: string): Observable<any> {
-    const url = `https://www.googleapis.com/gmail/v1/users/${userId}/messages/send`;
-    const body = { raw, threadId: messageId };  // Use `messageId` as `threadId`
-    return this.httpClient.post(url, body, { headers: this.authHeader() });
+  // sendDraft(userId: string, raw: string, messageId: string): Observable<any> {
+  //   const url = `https://www.googleapis.com/gmail/v1/users/${userId}/messages/send`;
+  //   const body = { raw, threadId: messageId };  // Use `messageId` as `threadId`
+  //   return this.httpClient.post(url, body, { headers: this.authHeader() });
+  // }
+
+
+
+  encodeBase64(text: string): string {
+    return btoa(unescape(encodeURIComponent(text)));
   }
 
 
 
 
+  getDrafts(): Observable<any[]> {
+    const url = `https://www.googleapis.com/gmail/v1/users/me/drafts`;
+    const headers = this.authHeader();
+    let draftMessages: any[] = [];
 
+    return new Observable(observer => {
+      this.httpClient.get<any>(url, { headers }).subscribe(response => {
+        if (response.drafts && response.drafts.length > 0) {
+          let pendingRequests = response.drafts.length;
+
+          response.drafts.forEach((draft: any) => {
+            this.getDraftMessage(draft.id).subscribe((message: any) => {
+              draftMessages.push({ draftId: draft.id, ...message });
+              pendingRequests--;
+
+              if (pendingRequests === 0) {
+                observer.next(draftMessages);
+                observer.complete();
+              }
+            });
+          });
+        } else {
+          observer.next([]);
+          observer.complete();
+        }
+      }, error => {
+        observer.error(error);
+      });
+    });
+  }
+
+  getDraftMessage(draftId: string): Observable<any> {
+    const url = `https://www.googleapis.com/gmail/v1/users/me/drafts/${draftId}`;
+    const headers = this.authHeader();
+
+    return this.httpClient.get<any>(url, { headers }).pipe(
+      map(response => ({ draftId, ...response.message })) // Add draftId in response
+    );
+  }
+
+  updateDraft(userId: string, draftId: string, raw: any): Observable<any> {
+    const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts/${draftId}`;
+    const headers = this.authHeader();
+    // console.log(raw);
+    
+    const body = {
+      message: {
+        raw: raw
+      }
+    };
+  
+    return this.httpClient.put<any>(url, body, { headers });
+  }
+
+  sendDraft(userId: string, draftId: string): Observable<any> {
+    const url = `https://www.googleapis.com/gmail/v1/users/${userId}/drafts/send`;
+    const headers = this.authHeader();
+  
+    const body = { id: draftId };
+  
+    return this.httpClient.post<any>(url, body, { headers });
+  }
+  
+
+  getAttachmentData(messageId: string, attachmentId: string): Observable<string> {
+    const url = `https://www.googleapis.com/gmail/v1/users/me/messages/${messageId}/attachments/${attachmentId}`;
+    const headers = this.authHeader();
+    return this.httpClient.get<any>(url, { headers }).pipe(
+      map(response => {
+        
+        return response.data;
+      })
+    );
+  }
 
 
 }
