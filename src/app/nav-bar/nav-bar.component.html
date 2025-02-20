@@ -224,7 +224,7 @@
                   class="m-3 w-10 h-10 border-gray-300 border-2 rounded-lg" />
               </div>
               <div class="mt-2" style="font-size: 1rem">
-                <p class="decoration-slate-900 mt-1 font-semibold" style="font-size: 0.8rem">
+                <p class="decoration-slate-900 mt-1 font-medium" style="font-size: 0.8rem">
                   {{ user.name }}
                 </p>
                 <p>
@@ -239,7 +239,7 @@
                 <button (click)="profilePopover()"
                   class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700">
                   <i class="pi pi-user p-2"></i>
-                  <p class="font-semibold p-1">Profile</p>
+                  <p class="font-medium p-1.5">Profile</p>
                 </button>
 
                 @if(profile){
@@ -249,7 +249,7 @@
                 }
               </div>
             </li>
-            <li>
+            <!-- <li>
               <div>
                 <button class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700"
                   [routerLink]="['/dashboard/inbox']" [routerLinkActive]="['router-link-active']">
@@ -257,13 +257,13 @@
                   <p class="font-semibold p-1">Inbox</p>
                 </button>
               </div>
-            </li>
+            </li> -->
             <li>
               <div>
                 <button class="flex mx-auto p-1 w-full hover:bg-slate-200 hover:text-blue-700" [routerLink]="['/lock']"
                   [routerLinkActive]="['router-link-active']">
                   <i class="pi pi-lock p-2"></i>
-                  <p class="font-semibold p-1">Lock Screen</p>
+                  <p class="font-medium p-1.5">Lock Screen</p>
                 </button>
               </div>
             </li>
@@ -282,7 +282,7 @@
                 <button (click)="onClickSignOut()"
                   class="flex mx-auto p-1 w-full border-t-[1px] border-b-[1px] rounded-sm text-gray-800 border-gray-200 hover:bg-slate-200 hover:text-blue-700">
                   <i class="pi pi-sign-out p-2"></i>
-                  <p class="font-semibold p-1">Sign Out</p>
+                  <p class="font-medium p-1.5">Sign Out</p>
                 </button>
               </div>
             </li>
